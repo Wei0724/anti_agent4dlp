@@ -68,6 +68,7 @@
 
     ```yaml
     mandatory_workflow:
+      step0: "必須先執行 view_file 讀取目標技能 (SKILL) 對應的 resources/ 範本檔案"
       step1: "必須先使用Grep/rg搜尋DPI580DG完整實作"
       step2: "必須完整讀取並理解DPI580DG標準格式"
       step3: "必須完全複製DPI580DG結構，只能修改表名和欄位名"
@@ -84,6 +85,7 @@
       - "跳過參考實作直接開始coding"
       - "猜測業務邏輯或功能需求"
       - "修改已確認正確的import路徑"
+      - "未閱讀 SKILL 相關 resources/ 範本即執行代碼生成 (預防邏輯斷層)"
     ```
 
     **7.4 參考實作強制規則**
@@ -139,6 +141,12 @@
       2. **轉成強制語氣**：將規則改寫為命令式、明確且不容模糊的作業規範。
       3. **追加到 .antigravity**：將規則寫入 `.antigravity` 檔案的適當區塊（如 7.4 或新增相關章節），嚴禁覆寫現有內容。
       4. **列出新增規則摘要**：在回覆中清晰條列本次新增的所有規則摘要，供使用者確認。
+    - **7.7 核心 SKILLS 強制檢索清單 (Mandatory SKILL Retrieval)**
+      在使用相關技能前，必須先執行讀取動作，否則視為任務失敗：
+      1. **SQL 開發**：必須讀取 `DlpBackendSqlStandard/resources/templates.sql` 驗證排序與分頁邏輯。
+      2. **前端開發**：必須讀取 `DlpFrontendStandard/resources/component-patterns.ts` 驗證 ColDef 與 State 模式。
+      3. **UI 映射**：必須讀取 `OracleUIStandard/resources/ui-mapping-examples.ts` 驗證座標對齊。
+      4. **XML 分析**：必須讀取 `OracleXmlAnalyzer/resources/analysis-report-template.md` 驗證報告格式。
 
 ---
 

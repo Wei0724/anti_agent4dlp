@@ -15,7 +15,7 @@ description: Oracle Forms to Angular/PLSQL End-to-End Migration Pipeline
 請讀取並執行 **`OracleXmlAnalyzer`** Skill 對目標 XML 檔案（例如 `XXX_fmb.xml`）進行深度解析。
 *   **目標**: 產出一份名為 `[Program ID]_xml_analysis.md` 的 Artifact。
 *   **內容要求**: 必須包含 UI 配置 (X/Y 座標, Label)、資料區塊關聯、按鈕觸發器邏輯 (WHEN-BUTTON-PRESSED, POST-QUERY) 及 LOV 定義。
-*   **注意**: 這是整個遷移的 **單一真相來源 (SSOT)**。在後續步驟中，**嚴禁**再次讀取原始 XML 檔案。
+*   **注意**: 這是整個遷移的 **單一真相來源 (SSOT)**。在執行本步驟前，**必須呼叫 `view_file` 讀取 `OracleXmlAnalyzer` 的 `analysis-report-template.md`** 以確保產出格式正確。在之後的後續步驟中，**嚴禁**再次讀取原始 XML 檔案。
 
 ## Step 2: 後端開發 (Phase II - Backend DDL)
 
@@ -25,6 +25,7 @@ description: Oracle Forms to Angular/PLSQL End-to-End Migration Pipeline
     - 將 XML 指示的隱藏欄位查詢 (如 POST-QUERY 原理) 整併進主查詢 JOIN 中。
     - 套用 `JSON_TABLE` 參數解析。
     - 嚴格實施 `1/-1/-N` 回傳協議並註記中文錯誤訊息。
+*   **關鍵檢索**: 執行本步驟前，**必須呼叫 `view_file` 讀取 `DlpBackendSqlStandard` 的 `templates.sql`**，驗證 `vSQLStmt` 的排序串接邏輯。
 
 ## Step 3: 前端骨架建置 (Phase III - Frontend Scaffold)
 
@@ -34,6 +35,7 @@ description: Oracle Forms to Angular/PLSQL End-to-End Migration Pipeline
     - 定義 State 管理 (禁止使用 `getRawValue()`)。
     - 將 Service 中的 ApiService 與後端 SP 綁定。
     - 實作網格資料綁定 (`getQueryInfo`) 與 LOV Editor 參數串接。
+*   **關鍵檢索**: 執行本步驟前，**必須呼叫 `view_file` 讀取 `DlpFrontendStandard` 的 `component-patterns.ts`**，驗證 `DlpColDef` 是否包含 `type` 屬性。
 
 ## Step 4: UI 精修與排版 (Phase IV - UI Formatting)
 
@@ -43,6 +45,7 @@ description: Oracle Forms to Angular/PLSQL End-to-End Migration Pipeline
     - 嚴格比對表單欄位名稱與寬度 (`width`, `lineBreak`, `blank`)。
     - 加入並正確套用靜態提示 (`(YYYYMM)`) 與紅色警語 (`textColor: 'red'`)。
     - 確保 `Service.initUserContext()` 有透過 `patchValue` 更新顯示。
+*   **關鍵檢索**: 執行本步驟前，**必須呼叫 `view_file` 讀取 `OracleUIStandard` 的 `ui-mapping-examples.ts`**，驗證座標對齊與寬度配置。
 
 ---
 *當使用者要求「執行 Oracle 遷移 Pipeline」或輸入 `/oracle-migration` 時，請嚴格按照此 1-2-3-4 步驟依序執行產出。*
