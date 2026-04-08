@@ -1,0 +1,4142 @@
+# AI Agent 行為準則 (AI Agent Core Mandates)
+
+本節定義了您作為 AI Agent 在此專案中的核心行為準則。您必須嚴格遵守以下指示：
+
+1.  **角色定位 (Role Definition):** 您是熟悉 **dlp-develop 專案** 的**全端開發專家**，具備以下專業能力:
+    - **.NET 6 + Angular 14** 全端架構理解
+    - **Oracle PL/SQL** 資料庫設計與 PKG 開發
+    - **dlp-grid / dlp-form** 專案特定元件實作
+    - **State-Control-Service-Component** 四層架構模式應用
+
+    您的首要目標是以專案特定的架構慣例，協助完成開發、分析、重構與除錯任務。
+
+2.  **核心工作流程 (Core Workflow):**
+    - **理解 (Understand):** 收到請求後，首先使用搜尋工具進行分析，以充分理解相關的程式碼與專案慣例。
+      - 使用可用的**搜尋工具** (如 `Grep`、`rg`、`search_file_content` 等)
+      - 優先進行大範圍關鍵字搜尋，鎖定目標後再讀取檔案
+    - **規劃 (Plan):** 根據您的理解，向使用者提出一個清晰、簡潔的執行計畫。
+    - **執行 (Implement):** 獲得使用者同意後，使用檔案操作工具執行計畫：
+      - 使用可用的**檔案操作工具** (如 `Read`、`Edit`、`Write` 或同等工具)
+      - 提供足夠的上下文確保操作的精準性
+    - **驗證 (Verify):** 變更完成後，您應主動思考如何驗證變更的正確性。由於本專案缺乏自動化測試，這通常意味著您需要重新檢視程式碼，或詢問使用者是否有手動驗證的步驟。
+
+3.  **遵守慣例 (Adherence to Conventions):** 本文件 (`.antigravity`) 以及 `SKILLS/` 目錄中的所有文件，都是您必須遵守的最高準則。**若本文件與 `SKILLS/` 內容有衝突，應以 `SKILLS/` 目錄下的文件為最終依據 (Source of Truth)。**
+
+4.  **檔案結構與定位 (File Placement):** 
+    - 前端新功能統一放置於 `views/[模組]/[地區]/[功能ID]/` 下，**嚴禁** 建立額外的 `pages/` 子目錄夾層。
+    - 後端 PKG 檔案命名為 `PK_[模組]_[功能ID].sql`。
+
+
+    **📊 分級閱讀策略**:
+    - **🔴 P0 - 必讀核心** (開始任何任務前):
+      - § 0 快速參考 - 核心慣例摘要
+      - § 0.1 範例程式索引 - 快速導航
+      - § 2.4 Token 優化策略 - 工作方法
+
+    - **🟡 P1 - 開發任務時** (依需求閱讀):
+      - 前端任務: § 4, § 5.1~5.3, § 6.2~6.4
+      - 後端任務: § 3, § 5.4~5.6
+      - 資料庫任務: § 5.4, § 5.6, § 5.7
+
+    - **🟢 P2 - 進階功能** (遇到特殊情況時):
+      - § 7 跨程式關聯 - 隱性耦合
+      - § 8 問題診斷 - 複雜 bug 追蹤
+      - § 10 常見問題 - 疑難排解
+
+    **🔍 有效閱讀技巧**:
+    - **先搜尋,後閱讀**: 使用 `rg` 搜尋關鍵字定位相關章節
+    - **按需深入**: 從範例索引跳轉到具體章節
+    - **使用 Agent**: 複雜任務使用 Task 工具的 Explore 代理深度分析
+    - **驗證理解**: 開始實作前,確認能回答 § 0.2 的檢查點問題
+
+5.  **工具使用原則 (Tool Usage Principles):**
+    - **優先使用本地搜尋:** 在讀取任何檔案之前，您**必須**優先使用搜尋工具進行大範圍的關鍵字搜尋與分析：
+      - 使用 **ripgrep (rg)** 或等效的搜尋工具進行內容搜尋
+      - 使用 **檔案搜尋工具** (如 `Glob`、`find`) 尋找檔案路徑
+      - 這能極大地節省 Token 並提高效率。只有在鎖定具體目標後，才讀取特定檔案的內容。
+    - **精準操作:** 在進行檔案修改時，務必提供足夠的上下文，確保操作的精準性：
+      - 使用檔案編輯工具時，提供準確且唯一的內容匹配字串
+      - 避免修改到非目標區域，特別注意縮排與格式
+
+6.  **溝通 (Communication):**
+    - **保持簡潔:** 您的回答應保持專業、直接、簡潔。
+    - **主動詢問:** 如果使用者的請求不明確，或可能有多種解釋，您必須主動提出問題以釐清意圖。
+
+7.  **🚨 AI行為強制約束 (Mandatory AI Behavior Constraints):**
+
+    **7.1 強制工作流程**
+
+    ```yaml
+    mandatory_workflow:
+      step1: "必須先使用Grep/rg搜尋DPI580DG完整實作"
+      step2: "必須完整讀取並理解DPI580DG標準格式"
+      step3: "必須完全複製DPI580DG結構，只能修改表名和欄位名"
+      step4: "有任何不確定必須停下來詢問用戶，絕對禁止猜測"
+    ```
+
+    **7.2 絕對禁止的行為**
+
+    ```yaml
+    forbidden_behaviors:
+      - "假設任何業務邏輯需求或功能"
+      - "自創非DPI580DG格式的PKG實作結構"
+      - "使用非標準的SQL語法或變數命名"
+      - "跳過參考實作直接開始coding"
+      - "猜測業務邏輯或功能需求"
+      - "修改已確認正確的import路徑"
+    ```
+
+    **7.4 參考實作強制規則**
+    - **Grid功能**: 必須100%參考DPI580DG實作，禁止自創
+    - **Form功能**: 必須100%參考FXR050DG實作，禁止自創
+    - **PKG結構**: 必須完全複製標準格式，只修改表名
+    - **變數命名**: 必須使用vResult, vCount, vParamsObj等標準名稱
+    - **SQL結構**: 必須使用WHERE A.ITEM >= ... AND A.ITEM <= ...標準格式
+    - **DlpColDef 宣告規則 (前端架構強制規則)**:
+      - **欄位宣告**: 網格定義必須使用 `public get` 屬性宣告，且回傳型別必須為 `DlpColDef[]`。
+      - **型別引用**: 必須統一從 `dlp-shared-datagrid` 引用 `DlpColDef` 與 `EDlpGridColumnType`。
+      - **型別指定**: 欄位配置中的 `type` 屬性必須使用 `EDlpGridColumnType` 列舉值（如 `EDlpGridColumnType.text`）。
+      - **Grid 綁定**: `Component` 必須透過 `State` 的 `gridConfig.columnDefs` 進行配置綁定，禁止在 HTML 直接硬編碼。
+      - **邏輯解耦**: 欄位內的事件回呼（如 `onCellValueChanged`）必須調用 `Service` 方法，禁止在 `Control` 層撰寫複雜業務邏輯。
+    - **前端命名與結構強制規則**:
+      - **檔案命名**: 所有前端功能檔案（Component, State, Service, Control）必須使用全小寫 kebab-case，且前綴必須與「功能代碼」完全一致（如 `pmb040.state.ts`）。
+      - **類別命名**: 類別名稱必須使用 PascalCase，並以其職責結尾（格式：`[功能代碼]Component`, `[功能代碼]State`, `[功能代碼]Service`, `[功能代碼]Control`）。
+      - **目錄結構**: 每一項功能必須在地區資料夾下建立獨立子資料夾，資料夾名稱為全小寫「功能代碼」（如 `views/pm/vn/pmb040/`）。此目錄下直接放置 7 個核心檔案，**嚴禁** 額外建立 `pages/` 子目錄。
+      - **Module 註冊**: 在 `Module` 中引用 Component 時，必須使用 `as` 加上「地區別名」（格式：`[功能代碼][地區小寫]Component`），並在 `declarations` 與 `routing` 中使用此別名。
+      - **Selector 命名**: `Component` 的 `selector` 必須統一使用 `app-[功能代碼小寫]`。
+      - **Control 配置**: 所有的 Grid 與 Form 欄位定義配置，必須在類別中使用 `public get` 唯讀屬性暴露。
+      - **HTML 視圖結構強制規則**:
+        - **佈局組件強制規則**: 頁面最外層或核心佈局必須使用 `<resize-layout>`，嚴禁使用 `<table>` 或自定義 `flex/float` 進行區塊佈局。
+            1. **變數宣告強制規則**：
+               - 必須且僅允許宣告單一變數：`@ViewChildren(ResizeLayoutTemplateDirective) resizeLayoutTemplates!: QueryList<ResizeLayoutTemplateDirective>;`
+               - **變數名稱必須為** `resizeLayoutTemplates`。
+               - **嚴禁**使用底線開頭命名（如 `_layoutTemplates`）。
+               - **嚴禁**拆分為 `private QueryList` 搭配 `public array`。
+            2. 必須實作 `AfterViewInit` 生命週期勾點 (Lifecycle Hook)。
+            3. 必須在 `ngAfterViewInit` 中將 `@ViewChildren` 抓取到的 `QueryList` 實體，正確轉換並賦值給 `State` 內的 `layoutRefs.templates` 配置。
+            4. **資料夾定位**：元件檔案必須直接位於 `[地區]/[功能ID]/` 目錄下。
+
+        - **內容掛載**: 所有內容必須定義在 `<ng-template>` 中，並搭配 `resizeLayoutTemplate` 或 `appTabTemplate` 指令進行註冊。
+        - **元件選用**: 查詢條件、按鈕、摘要欄位必須使用 `<dlp-form>`；數據網格必須使用 `<dlp-grid>`。
+        - **標籤限制**: 嚴禁在 HTML 直寫 `<input>`, `<select>`, `<button>`，所有互動必須經由 `dlp-` 元件。
+        - **彈窗宣告與結構約束**:
+          - 彈窗必須使用 `<ng-template appCustomizeModelDialogTemplate key="...">` 宣告。
+          - 未來生成彈窗時，必須嚴格遵守以下三大原則：
+            1. **禁止自行新增 style class**：嚴禁使用 `<div>` 包裝或手動加入 custom class / inline style 進行排版與位移 (零包裝原則)。
+            2. **標題一律使用 `<dlp-title>`**：彈窗內的標題一律強制使用 `<dlp-title>` 原生元件，嚴禁自訂任何 HTML 標籤（如 `<div class="grid-header">`）作為標題。
+            3. **樣式交由共用元件控制**：內容應直接放置 `<dlp-form>` 或 `<dlp-grid>`，100% 依賴共用元件本身的預設樣式與元件自適應機制，嚴禁手動寫死任何尺寸屬性（如不要加上 `gridHeight="45vh"` 等設定）。
+        - **視圖邏輯**: HTML 僅供結構定義，禁止包含業務邏輯、複雜運算或直接變更數據狀態。
+        - **樣式管理**: 優先選用元件內建樣式或 CSS Token，自定義 Class 必須具備業務描述性，禁止 Ad-hoc 樣式位移。
+
+    **7.5 違反約束的後果**
+    - 任何違反上述約束的行為都將導致開發失敗
+    - 必須重新按照標準流程執行
+    - 用戶有權要求重新開發符合規範的實作
+
+    **7.6 特定指令響應模式 (Specific Command Response Patterns)**
+    - 當使用者輸入「將本次分析結果納入專案規範」時，必須執行以下流程：
+      1. **萃取泛用規則**：從當前討論或分析中提煉出具備專案普適性的開發原則，去除特定業務名稱。
+      2. **轉成強制語氣**：將規則改寫為命令式、明確且不容模糊的作業規範。
+      3. **追加到 .antigravity**：將規則寫入 `.antigravity` 檔案的適當區塊（如 7.4 或新增相關章節），嚴禁覆寫現有內容。
+      4. **列出新增規則摘要**：在回覆中清晰條列本次新增的所有規則摘要，供使用者確認。
+
+---
+
+# 專案深度分析報告 (Project Deep Dive Analysis)
+
+本文件由 AI 協助生成與維護，旨在分析 `dlp-develop` 專案的結構、技術棧和慣例，為未來的開發任務提供上下文參考。
+
+## 目錄 (Table of Contents)
+
+- [0. 快速參考](#0-快速參考-quick-reference)
+  - [0.1. 範例程式索引](#01-範例程式索引-example-programs-index)
+  - [0.2. 理解檢查點](#02-理解檢查點-understanding-checkpoints)
+  - [0.3. 任務決策樹](#03-任務決策樹-task-decision-tree)
+  - [0.4. 常見錯誤與預防](#04-常見錯誤與預防-common-pitfalls--prevention)
+- [1. 技術棧](#1-技術棧-technology-stack)
+- [2. 專案分析技巧與建議](#2-專案分析技巧與建議-project-analysis-tips--suggestions)
+  - [2.1 AI 程式碼品質控制指引](#21-ai-程式碼品質控制指引-ai-code-quality-control-guidelines)
+  - [2.2. 精準追蹤定義：從前端互動到後端邏輯](#22-精準追蹤定義從前端互動到後端邏輯)
+  - [2.3. 程式檔案搜尋的關鍵原則](#23-程式檔案搜尋的關鍵原則-key-principles-for-program-file-search)
+  - [2.4. Token 優化核心策略](#24-token-優化核心策略-token-optimization-core-strategies)
+- [3. 專案架構](#3-專案架構-project-architecture)
+- [4. 核心設計模式與慣例](#4-核心設計模式與慣例-core-design-patterns--conventions)
+- [5. 前端網格元件分析](#5-前端網格元件分析-frontend-grid-components-analysis)
+- [6. 前端表單元件分析](#6-前端表單元件分析-frontend-form-components-analysis)
+- [7. 可調整大小區塊元件分析](#7-可調整大小區塊元件分析-resizable-layout-component-analysis)
+- [8. 資料庫套件 (PKG) 分析](#8-資料庫套件-pkg-分析)
+- [9. 前後端資料互動模式](#9-前後端資料互動模式-frontend-backend-data-interaction-patterns)
+- [10. 資料庫參數傳遞模式](#10-資料庫參數傳遞模式-database-parameter-passing-patterns)
+- [11. PKG 檔案 Schema 推理實例](#11-pkg-檔案-schema-推理實例-pkg-file-schema-inference-example)
+- [12. 如何新增功能](#12-如何新增功能-how-to-add-a-new-feature)
+- [13. 從零開始寫一個完整 dlp-grid 的步驟](#13-從零開始寫一個完整-dlp-grid-的步驟-參考-dpi580dg)
+- [14. 從零開始寫一個完整 dlp-form 的步驟](#14-從零開始寫一個完整-dlp-form-的步驟-參考-fxr050dg)
+- [15. 實際開發案例：Form + Grid 整合](#15-實際開發案例form--grid-整合-參考-dpi999dg)
+- [16. 如何新增分頁](#16-如何新增分頁-how-to-add-a-new-tab)
+- [17. 報表功能實作指南](#17-報表功能實作指南-report-generation-implementation-guide)
+- [18. 跨程式關聯與進階模式](#18-跨程式關聯與進階模式-cross-program-relations--advanced-patterns)
+- [19. 問題診斷與資料流追蹤方法論](#19-問題診斷與資料流追蹤方法論-problem-diagnosis--data-flow-tracking-methodology)
+- [20. 通用開發架構與最佳實踐](#20-通用開發架構與最佳實踐-general-development-architecture--best-practices)
+- [21. 常見問題與解決方案](#21-常見問題與解決方案)
+- [附錄 A: 常用名詞對照表](#附錄-a-常用名詞對照表-appendix-a-glossary)
+
+---
+
+## 0. 快速參考 (Quick Reference)
+
+本節提供專案最核心的慣例摘要，方便快速回顧。
+
+- **技術棧**: .NET 6 (C#) 後端, Angular 14 (TypeScript) 前端, Oracle 19c 資料庫。
+- **測試策略**: **手動測試**。專案沒有自動化單元測試或整合測試，開發者需手動驗證功能是否正常。
+- **核心架構**: 模組化 N-Tier 架構，按兩個大寫字母的功能代碼 (如 `WO`, `SD`, `DP`) 進行垂直切分。
+- **前端開發模式**:
+  - **`State-Control-Service-Component`**: 頁面功能由這四個 `*.ts` 檔案明確分工合作。
+  - **核心元件**: 新功能應優先使用 `<dlp-grid>` 和 `<dlp-form>`。
+  - **🚨 模組註冊強制要求**: 新增 Component 時，**必須**同時更新：
+    - `*.module.ts` 中的 `import` 和 `declarations`
+    - `*-routing.module.ts` 中的路由設定
+- **後端開發模式**:
+  - **API 設計**: 優先使用「前端直達模式」，由前端指定預存程序名稱 (`actionOrSpName`)，透過通用 API 呼叫。僅在邏輯複雜時，才建立特定的 `Controller` 與 `Service`。
+  - **資料庫互動**: 預存程序 (Stored Procedure) 應優先採用「JSON 承載模式」，將所有參數打包成一個 `vJson CLOB` 參數傳遞，以保持彈性。
+- **命名慣例**:
+  - **後端 (C#)**: `[頁面名稱]Controller.cs`, `[頁面名稱]Service.cs` (**PascalCase**, 如 `WOQ999Controller.cs`)
+  - **前端 (TS)**: `[頁面名稱].component.ts`, `[頁面名稱].service.ts` (**kebab-case 小寫**, 如 `woq999.component.ts`)
+  - **前端目錄**: `pages/[頁面名稱]/` (**kebab-case 小寫**, 如 `pages/woq999/`)
+- **地區代碼對照**:
+  - **DG**: 東莞 (Dongguan)
+  - **TC**: 台中 (Taichung)
+  - **VN**: 越南 (Vietnam)
+- **架構例外**: 注意 `SD` 模組的前端檔案可能放在 `views/wo/` 目錄下；資料庫的 `.sql` 檔案也常有模組與目錄不匹配的情況，需以檔案名 (`PK_SD_*`) 為準。
+
+## 0.1. 範例程式索引 (Example Programs Index)
+
+本文件使用多個實際程式作為範例說明。為避免重複閱讀，請依需求直接跳轉至對應章節：
+
+| 範例程式     | 主要展示功能                              | 詳細說明章節        | 使用次數 |
+| ------------ | ----------------------------------------- | ------------------- | -------- |
+| **DPI580DG** | `<dlp-grid>` 完整實作範例 + JSON 承載模式 | § 6.2, § 5.6 模式 B | ⭐⭐⭐   |
+| **FXR050DG** | `<dlp-form>` 完整實作範例                 | § 6.3               | ⭐⭐     |
+| **WOU500DG** | 前端直達模式 (Direct-Access Pattern)      | § 5.5 模式 A        | ⭐⭐     |
+| **WOQ390DG** | 標準分層模式 (Layered Pattern)            | § 5.5 模式 B        | ⭐       |
+| **DPI999DG** | Form + Grid 集成範例                      | § 6.4               | ⭐       |
+| **WOU089DG** | 傳統參數模式 (Individual Parameters)      | § 5.6 模式 A        | ⭐       |
+| **SDI17EDG** | 共享狀態資料表案例                        | § 2.2, § 7.1        | ⭐       |
+| **WOC620DG** | 還原功能影響其他程式                      | § 2.2, § 7.1        | ⭐       |
+| **WOI390DG** | 功能實現多樣性案例                        | § 2.3, § 7.2        | ⭐       |
+
+**使用建議:**
+
+- ⭐⭐⭐ 核心範例：建議詳細閱讀
+- ⭐⭐ 重要範例：建議理解概念
+- ⭐ 參考範例：需要時查閱
+
+**範例程式命名規則:**
+
+- 格式：`[模組][功能編號][地區]` (如 `DPI580DG` = DP 模組 + I580 功能 + DG 東莞)
+- 地區代碼：`DG` (東莞)、`TC` (台中)、`VN` (越南)
+
+## 0.2. 理解檢查點 (Understanding Checkpoints)
+
+在執行開發任務前，請確認您能回答以下問題。如無法回答，請使用搜尋工具定位相關章節重新閱讀。
+
+### 核心概念 (必須理解)
+
+✓ **State-Control-Service-Component** 四層架構各自的職責是什麼?
+
+- State: 管理狀態和 Refs 實例
+- Control: 定義欄位配置
+- Service: 處理業務邏輯和 API 互動
+- Component: 協調各層並處理 UI 事件
+
+✓ **前端直達模式** vs **標準分層模式** 的差異和適用場景?
+
+- 直達模式: 簡單 CRUD,前端直接指定 SP 名稱
+- 分層模式: 複雜邏輯,需要專門的 Controller/Service
+
+✓ **JSON 承載模式** 中的 `vJson CLOB` 參數如何使用?
+
+- 將所有參數打包成 JSON 傳遞
+- 使用 `JSON_TABLE` 解析
+- 靈活新增參數無需修改簽名
+
+### 實作細節 (開發時確認)
+
+✓ **dlp-grid** 的 `getQueryInfo` 方法應返回什麼結構?
+✓ **dlp-form** 的 `fieldConfs` 中如何定義按鈕並綁定事件?
+✓ 如何在 Service 中實作 Update/Delete 邏輯?
+
+### 專案慣例 (遇到時查閱)
+
+✓ SD 模組的前端檔案可能在哪個目錄? (提示: § 4.1)
+✓ PKG 檔案名稱與實際目錄不匹配時如何處理?
+✓ 如何推斷沒有 DDL 定義的資料表結構? (提示: § 5.7)
+
+---
+
+## 0.3. 任務決策樹 (Task Decision Tree)
+
+收到開發任務時，依序判斷以快速定位相關章節:
+
+```
+📋 任務類型判斷
+│
+├─ 🆕 新增功能
+│  ├─ 涉及 dlp-grid? → 📖 參照 SKILLS/DlpFrontendStandard + § 6.2 DPI580DG
+│  ├─ 涉及 dlp-form? → 📖 參照 SKILLS/DlpFrontendStandard + § 6.3 FXR050DG
+│  └─ 兩者都有?     → 📖 參照 § 6.4 DPI999DG
+│
+├─ 🔧 修改現有功能
+│  ├─ 前端修改? → 🔍 搜尋元件名稱 → 讀取 State/Control/Service (路徑：views/[module]/[region]/[ID]/)
+│  ├─ 後端修改? → 🔍 搜尋 Controller/Service 名稱
+│  └─ 資料庫修改? → 🔍 搜尋 PK_[模組]_[程式名] PKG (註解請參照 SKILLS/DlpBackendSqlStandard)
+│
+├─ 🐛 問題診斷
+│  ├─ 資料流追蹤? → 📖 參照 § 8 問題診斷方法論
+│  ├─ 隱性耦合?   → 📖 參照 § 7.1 共享狀態資料表
+│  └─ 常見錯誤?   → 📖 參照 § 10 常見問題與解決方案
+│
+└─ 📊 架構分析
+   ├─ 前端架構? → 📖 參照 § 3 專案架構 + § 5.1~5.3
+   ├─ 後端架構? → 📖 參照 § 3 專案架構 + § 5.4~5.6
+   └─ 資料庫?   → 📖 參照 § 5.4 PKG 分析 + § 5.7 Schema 推理
+```
+
+**💡 快速提示**:
+
+- 不確定從哪裡開始? → 先讀 § 0 快速參考
+- 需要範例程式? → 查 § 0.1 範例索引
+- 大量程式碼分析? → 用 `rg` 搜尋 (§ 2.4 Token 優化)
+
+---
+
+## 0.4. 常見錯誤與預防 (Common Pitfalls & Prevention)
+
+在本專案開發中，AI 常犯以下錯誤。記住這些能顯著提升開發效率:
+
+### ❌ 錯誤 1: 檔案路徑假設錯誤
+
+**錯誤行為**: 假設 SD 模組的檔案一定在 `views/sd/` 或 `DLP.SQL/SD/`
+**正確做法**:
+
+- SD 模組前端檔案可能在 `views/wo/` (§ 4.1)
+- 資料庫檔案依檔案名 `PK_SD_*` 判斷，不依目錄
+- **永遠先用 `rg` 搜尋檔案內容定位**
+
+### ❌ 錯誤 2: 直接修改檔案而未先搜尋
+
+**錯誤行為**: 收到任務後立即使用 Read 工具讀取檔案
+**正確做法**:
+
+- 先用 `rg` 搜尋關鍵字了解分佈 (§ 2.4)
+- 確定重點檔案後再精準讀取
+- 大型專案搜尋 **完全不消耗 token**
+
+### ❌ 錯誤 3: 假設相似功能有相同實作
+
+**錯誤行為**: 看到「三年資料過濾」就假設都用相同方式實作
+**正確做法**:
+
+- SDI17EDG 用 SD710 備份表
+- WOI390DG 用 WOC20.STYLE_TYPE 旗標
+- **功能實作多樣性，不可假設** (§ 2.3)
+
+### ❌ 錯誤 4: 忽略隱性耦合
+
+**錯誤行為**: 只看當前程式，不考慮對其他程式的影響
+**正確做法**:
+
+- 修改共享資料表 (如 SD710) 前，搜尋所有使用它的程式
+- WOC620DG 的還原會影響 SDI17EDG 的查詢結果 (§ 7.1)
+- 使用 `rg` 搜尋資料表名稱確認影響範圍
+
+### ❌ 錯誤 5: 過度創新而不遵循慣例
+
+**錯誤行為**: 自創新的 Grid 配置方式或命名規則
+**正確做法**:
+
+- Grid 功能 **100% 參照 DPI580DG** (§ 6.2)
+- Form 功能 **100% 參照 FXR050DG** (§ 6.3)
+- PKG 結構 **完全複製標準格式**
+- 變數命名 **必須使用 vResult, vCount, vParamsObj**
+
+### ✅ 預防性檢查清單
+
+開始實作前，確認:
+
+- [ ] 已用 `rg` 搜尋相關檔案和關鍵字
+- [ ] 已查閱 § 0.1 確認有無相似範例可參照
+- [ ] 已確認檔案實際位置 (不依賴目錄名稱)
+- [ ] 已搜尋共享資料表的所有使用處
+- [ ] 已理解 § 0.2 的核心概念檢查點
+
+---
+
+## 1. 技術棧 (Technology Stack)
+
+根據專案設定檔及原始碼分析，可以確定以下技術棧：
+
+- **後端 (Backend)**:
+  - **框架**: .NET 6 (在 `.csproj` 中指定為 `net6.0`)，使用 C# 語言。
+  - **標誌**: `dlp-develop.sln`, `*.csproj` 檔案。
+  - **架構**: ASP.NET Core Web API，用於提供 RESTful API 服務。
+
+- **前端 (Frontend)**:
+  - **框架**: Angular 14 (在 `package.json` 中指定 `@angular/core` 版本為 `^14.3.0`)。
+  - **標誌**: `package.json`, `package-lock.json`, `node_modules` 目錄。
+  - **語言**: TypeScript, SCSS。
+  - **形式**: 單頁應用程式 (SPA)，內嵌於 ASP.NET Core 主專案中。
+
+- **資料庫 (Database)**:
+  - **類型**: **Oracle 關聯式資料庫**。
+  - **版本**: 19c。
+  - **標誌**: `DLP.SQL` 目錄下的 `.sql` 檔案，主要包含 **Oracle PL/SQL 套件 (Package)、儲存程序 (Procedure) 和函數 (Function)** 的定義。
+  - **結構**: 資料庫腳本按地區代碼 (`DG`、`TC`、`VN` 等) 進行了劃分，表明系統可能支援多地區或多租戶部署。
+
+- **開發與維運 (DevOps & Environment)**:
+  - **版本控制**: Git (`.git` 目錄)。
+  - **CI/CD**: Drone (`.drone.yml` 檔案)，用於自動化建置和部署。
+  - **開發環境**:
+    - 主要使用 Visual Studio 進行 .NET 開發 (`.sln` 檔案)。
+    - 同時使用 Visual Studio Code 進行前端或跨語言開發 (`.vscode`, `.code-workspace`)。
+  - **腳本**: 使用 Windows Batch Scripts (`.bat`) 進行本地建置和偵錯。
+
+## 2. 專案分析技巧與建議 (Project Analysis Tips & Suggestions)
+
+基於對本專案的深度分析，總結以下幾點核心技巧，有助於更快速、準確地理解程式碼脈絡。
+
+### 2.0. 🚨 AI 路徑問題重要提醒 (Critical Path Issues for AI)
+
+**基於實際開發經驗，AI 在處理檔案路徑時經常犯嚴重錯誤，特別記錄如下：**
+
+#### AI 常見路徑錯誤與修正
+
+**❌ AI 最常犯的嚴重錯誤**：
+
+1. **在專案根目錄建立 `src` 資料夾**
+   - 錯誤：在 `DLP-DEVELOP` 根目錄建立檔案
+   - 正確：必須在 `CLIENTAPP` 目錄下建立
+
+2. **使用錯誤的工作目錄**
+   - 錯誤：不檢查當前工作目錄就建立檔案
+   - 正確：使用完整絕對路徑或確認工作目錄
+
+3. **檔案結構混亂**
+   - 錯誤：混合新舊檔案結構標準
+   - 正確：新程式一律使用 `pages/[程式名稱]/` 結構
+
+**✅ AI 必須遵循的路徑規範**：
+
+```
+Correct Project Structure:
+DLP-DEVELOP/                           ← Project Root
+├── DLP.Web/
+│   └── DLP.Web.AppPortal/
+│       └── ClientApp/                 ← Frontend AppRoot
+│           └── src/
+│               └── app/
+│                   └── views/
+│                       └── [Module]/
+│                           └── [Region]/
+│                               ├── [ProgramID]/       ← Standard Structure (NO "pages/" folder)
+│                               │   ├── [ID].component.ts
+│                               │   ├── [ID].state.ts
+│                               │   └── ...
+│                               ├── controls/
+│                               ├── services/
+│                               └── states/
+```
+
+**🔧 AI 檔案建立標準流程**：
+
+1. **確認當前工作目錄**：
+
+   ```bash
+   pwd  # 必須在 CLIENTAPP 目錄或使用完整路徑
+   ```
+
+2. **使用完整路徑建立檔案**：
+
+   ```
+   完整路徑範例：
+   DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/cl/vn/pages/clq080/clq080.component.ts
+   ```
+
+3. **檔案結構對應**：
+   - 所有程式：`[地區]/[程式名稱]/` （如 `vn/clq080/`）
+   - **嚴禁使用 `pages/` 子目錄夾層**
+   - 舊程式若存在於不同結構，維持原樣，但新開發嚴禁比照舊有錯誤結構。
+
+**⚠️ AI 檢查清單**：
+
+- [ ] 確認不在專案根目錄建立檔案
+- [ ] 確認使用正確的 CLIENTAPP 路徑
+- [ ] 確認檔案結構符合新程式標準
+- [ ] 確認參考現有程式的實際路徑結構
+- [ ] 刪除錯誤位置的檔案
+
+**🚨 絕對禁止的行為**：
+
+- ❌ 在 `DLP-DEVELOP` 根目錄建立任何程式檔案
+- ❌ 不檢查工作目錄就建立檔案
+- ❌ 混用新舊檔案結構
+- ❌ 使用相對路徑而不確認起始位置
+
+## 2.1 AI 程式碼品質控制指引 (AI Code Quality Control Guidelines)
+
+**🚨 基於實際cursor錯誤分析的AI開發改善指引**
+
+### 2.1.1 API方法使用錯誤與修正
+
+**❌ 常見API錯誤：使用不存在的方法**
+
+```typescript
+// ❌ 錯誤：使用不存在的API方法
+this._api.callStoreProcedureDataSet("PK_CL_CLQ080.PC_CLQ080_DELETE_CL040", {
+  payload: { CL040_GOOD_NO: $event.node.data.CL040_GOOD_NO },
+  refCursorKeys: ["vResult"],
+});
+
+// ✅ 正確：使用 executeDelete 方法
+this._state.cl040GridRefs.executeDelete("PK_CL_CLQ080.PC_CLQ080_DELETE_CL040", {
+  payload: { CL040_GOOD_NO: $event.node.data.CL040_GOOD_NO },
+  refCursorKeys: ["vResult"],
+  resultCode: (result: any) => result?.dsResult?.Table[0]?.RESULT,
+  response: (res: any) => {
+    if (res.resCode != '1') {
+      this._notificationService.showWarning(
+        "刪除失敗：有對應的明細資料，請先刪除明細資料。",
+      );
+    }
+  },
+});
+```
+
+**✅ 標準DELETE操作模式（參考DPI580DG）：**
+
+```typescript
+public deleteCl040 = ($event: DlpGridDeleteRowEvent): void => {
+  this._state.cl040GridRefs.executeDelete('PK_CL_CLQ080.PC_CLQ080_DELETE_CL040', {
+    payload: {
+      CL040_GOOD_NO: $event.node.data.CL040_GOOD_NO,
+    },
+    refCursorKeys: ['vResult'],
+    resultCode: (result: any) => result?.dsResult?.Table[0]?.RESULT,
+    response: (res: any) => {
+      if (res.resCode != '1') {
+        this._notificationService.showWarning('刪除失敗：有對應的明細資料，請先刪除明細資料。');
+      }
+    },
+  });
+};
+```
+
+### 2.1.2 HTML模板屬性錯誤與修正
+
+**❌ 常見HTML錯誤：錯誤的屬性名稱和語法**
+
+```html
+<!-- ❌ 錯誤：使用錯誤的template屬性語法 -->
+<ng-template resizeLayoutTemplate="cl040GridRefsTemplate">
+  <dlp-grid [dlpGridRefs]="state.cl040GridRefs"></dlp-grid>
+</ng-template>
+
+<!-- ✅ 正確：使用key屬性和[gridRefs] -->
+<ng-template resizeLayoutTemplate key="cl040GridRefsTemplate">
+  <dlp-grid [gridRefs]="state.cl040GridRefs"></dlp-grid>
+</ng-template>
+```
+
+**✅ 標準HTML模板（參考DPI580DG）：**
+
+```html
+<resize-layout
+  [config]="state.layoutRefs.config"
+  [templates]="layoutTemplates"
+></resize-layout>
+
+<ng-template resizeLayoutTemplate key="dp580GridRefsTemplate">
+  <dlp-grid
+    [gridRefs]="state.dp580GridRefs"
+    (save)="onDP580GridSave($event)"
+    (deleteRow)="onDP580GridDelete($event)"
+    (rowSelected)="onDP580RowSelected()"
+  ></dlp-grid>
+</ng-template>
+
+<ng-template resizeLayoutTemplate key="dp581GridRefsTemplate">
+  <dlp-grid
+    [gridRefs]="state.dp581GridRefs"
+    (save)="onDP581GridSave($event)"
+    (deleteRow)="onDP581GridDelete($event)"
+  ></dlp-grid>
+</ng-template>
+```
+
+### 2.1.3 TypeScript類型定義錯誤
+
+**❌ 類型錯誤：隱含 any 類型**
+
+```typescript
+// ❌ 錯誤：參數隱含 any 類型
+.subscribe((res) => {  // res 隱含 any 類型
+```
+
+**✅ 正確類型定義：**
+
+```typescript
+// ✅ 正確：明確定義類型
+response: (res: any) => {
+  if (res.resCode != '1') {
+    this._notificationService.showWarning('系統發生錯誤，請通知電腦室人員！');
+  }
+},
+```
+
+### 2.1.4 常見編譯錯誤與解決方案
+
+**🚨 基於CLQ080VN實戰經驗的編譯錯誤處理**
+
+#### **🔍 AI 必須優先查閱：DLP 共享元件完整型別定義清單**
+
+**⚠️ AI 重要指令：使用任何 dlp-shared-\* 元件前必須先使用 Read 工具查閱型別定義**
+
+```bash
+# 🎯 dlp-shared-datagrid (資料網格) - 最常用
+├── models/
+│   ├── ag-grid-components.model.d.ts     # EDlpGridColumnType, GridComponents
+│   ├── datagrid.model.d.ts               # DlpColDef, GridOptions
+│   └── dlp-grid-config.model.d.ts        # DlpGridConfig, GridPermissions
+├── states/
+│   └── grid.refs.d.ts                    # DlpGridRefs API (getSelectedRow, executeDelete 等)
+├── datagrid/
+│   ├── ag-grid-api.d.ts                  # Grid 操作方法
+│   ├── ag-grid.component.d.ts            # Grid 元件主體
+│   ├── ag-grid-base-custom-editor/       # 自定義編輯器
+│   ├── ag-grid-cell-grid-renderer/       # Cell 渲染器
+│   ├── ag-grid-date-filter/              # 日期篩選器
+│   └── ag-grid-detail-customize/         # 詳細資料自定義
+
+# 🎯 dlp-shared-form (動態表單)
+├── models/
+│   ├── dynamic-form.model.d.ts           # DynamicFormConfig, FormField
+│   ├── form-control.model.d.ts           # FormControlConfig
+│   └── form-validation.model.d.ts        # ValidationConfig
+├── states/
+│   └── form.refs.d.ts                    # DlpFormRefs API
+├── form/
+│   ├── dynamic-form/                     # 動態表單元件
+│   ├── custom-controls/                  # 自定義控制項
+│   │   ├── custom-date/                  # 日期控制項
+│   │   ├── custom-dropdown/              # 下拉選單
+│   │   ├── custom-checkbox/              # 核取方塊
+│   │   └── custom-radio/                 # 單選按鈕
+│   └── form-api.d.ts                     # Form API 方法
+
+# 🎯 dlp-shared-components (共享元件庫)
+├── models/
+│   ├── layout.model.d.ts                 # 版面配置模型
+│   ├── component.model.d.ts              # 元件基礎模型
+│   └── resize-layout.model.d.ts          # ResizeLayoutRefs 配置
+├── components/
+│   ├── app-confirm/                      # 確認對話框
+│   ├── app-loader/                       # 載入器
+│   ├── app-progress/                     # 進度條
+│   ├── dynamic-grid-list/                # 動態網格清單
+│   ├── expansion-search/                 # 展開搜尋
+│   ├── file-upload/                      # 檔案上傳
+│   ├── report/                           # 報表元件
+│   └── tab/                              # 頁籤元件
+├── controls/
+│   └── resize-layout/                    # 版面調整控制項
+└── services/
+    ├── api.service.d.ts                  # API 服務
+    └── notification.service.d.ts         # 通知服務
+
+# 🎯 dlp-shared-button-authority (按鈕權限)
+├── button-authority/
+│   ├── button-authority.component.d.ts   # 權限按鈕元件
+│   ├── button-authority.module.d.ts      # 模組定義
+│   └── buttons/
+│       └── buttons.component.d.ts        # 按鈕群組元件
+
+# 🎯 dlp-shared-chart (圖表元件)
+├── model/
+│   └── chart.model.d.ts                  # 圖表配置模型
+├── chart/
+│   ├── ag-chart/                         # AG-Chart 元件
+│   ├── chart.api.d.ts                    # 圖表 API
+│   └── chart.module.d.ts                 # 圖表模組
+
+# 🎯 dlp-shared-material (Material UI)
+├── material/                             # Material Design 元件封裝
+├── models/
+│   └── material.model.d.ts               # Material 模型定義
+
+# 🎯 dlp-shared-services (共享服務)
+├── services/
+│   ├── api/                              # API 相關服務
+│   ├── auth/                             # 認證服務
+│   ├── cache/                            # 快取服務
+│   ├── notification/                     # 通知服務
+│   └── utility/                          # 工具服務
+└── models/
+    └── service.model.d.ts                # 服務模型定義
+
+# 🎯 dlp-shared-states (狀態管理)
+├── states/
+│   ├── base-state.d.ts                   # 基礎狀態類別
+│   ├── app-state.d.ts                    # 應用程式狀態
+│   └── component-state.d.ts              # 元件狀態
+└── models/
+    └── state.model.d.ts                  # 狀態模型
+
+# 🎯 dlp-shared-utils (工具函式)
+├── utils/
+│   ├── date/                             # 日期工具
+│   ├── format/                           # 格式化工具
+│   ├── validation/                       # 驗證工具
+│   └── common/                           # 通用工具
+└── models/
+    └── util.model.d.ts                   # 工具模型
+
+# 🎯 dlp-shared-directives (指令)
+├── directives/
+│   ├── form/                             # 表單指令
+│   ├── grid/                             # 網格指令
+│   └── common/                           # 通用指令
+
+# 🎯 dlp-shared-pipes (管道)
+├── pipes/
+│   ├── date/                             # 日期管道
+│   ├── format/                           # 格式化管道
+│   └── currency/                         # 幣值管道
+
+# 🎯 其他套件
+├── dlp-shared-chat/lib/                  # 聊天元件
+├── dlp-shared-form-base/lib/             # 表單基礎
+├── dlp-shared-gallery-images/lib/        # 圖片庫
+└── dlp-shared-models/lib/                # 共享模型
+```
+
+**🚨 AI 絕對必須遵循的流程：**
+
+1. **先 Read 型別定義，再寫程式碼**：絕對不可在未查閱型別定義的情況下使用任何 dlp-shared-\* API
+2. **禁止猜測任何 API**：屬性名稱、方法名稱、enum 值、介面結構都必須以實際型別定義為準
+3. **使用具體檔案路徑**：查閱時使用完整路徑，如 `node_modules/dlp-shared-datagrid/lib/states/grid.refs.d.ts`
+4. **記住 API 結構**：AI 記憶力佳，一旦查閱過可記住常用 API 結構供後續使用
+
+#### **路徑錯誤 (Import Path Issues)**
+
+```
+Cannot find module '../controls/xxx.control'
+```
+
+**❌ 錯誤原因**：Component 在 `pages/xxx/` 子目錄中，相對路徑計算錯誤
+
+**✅ 解決方案**：
+
+```typescript
+// ❌ 錯誤的路徑（在pages子目錄中）
+import { Clq080Control } from "../controls/clq080.control";
+
+// ✅ 正確的路徑（向上兩層）
+import { Clq080Control } from "../../controls/clq080.control";
+```
+
+#### **Grid 欄位類型錯誤 (Grid Column Type Error)**
+
+```
+Property 'numeric' does not exist on type 'typeof EDlpGridColumnType'
+```
+
+**❌ 錯誤原因**：使用了不存在的 `EDlpGridColumnType.numeric`
+
+**✅ 解決方案**：查閱 `ag-grid-components.model.d.ts:81-91` 的正確定義
+
+```typescript
+// ❌ 錯誤的類型（不存在）
+type: EDlpGridColumnType.numeric,
+
+// ✅ 正確的類型（來自型別定義）
+type: EDlpGridColumnType.number,
+
+// 📚 完整的 EDlpGridColumnType 定義：
+// text | date | number | lov | checkbox | select | radio | button | image
+```
+
+#### **Grid API 方法錯誤 (Grid API Method Error)**
+
+```
+Property 'selectedRowData' does not exist on type 'DlpGridRefs'
+```
+
+**❌ 錯誤原因**：使用了不存在的 `selectedRowData` 屬性
+
+**✅ 解決方案**：查閱 `grid.refs.d.ts:113-198` 的正確 API
+
+```typescript
+// ❌ 錯誤的API（不存在）
+CL040_GOOD_NO: this._state.cl040GridRefs?.selectedRowData?.CL040_GOOD_NO,
+
+// ✅ 正確的API（來自型別定義）
+CL040_GOOD_NO: this._state.cl040GridRefs.getSelectedRow()?.CL040_GOOD_NO,
+
+// 📚 DlpGridRefs 主要方法：
+// getSelectedRow(): any
+// getSelectedRowIndex(): number
+// executeQueryByInfo(): void
+```
+
+#### **編譯檢查命令**
+
+**快速檢查**：
+
+```bash
+cd DLP.Web/DLP.Web.AppPortal/ClientApp
+npx tsc --noEmit --skipLibCheck
+```
+
+**完整檢查**：
+
+```bash
+cd DLP.Web/DLP.Web.AppPortal/ClientApp
+npm run build
+```
+
+### 2.1.5 架構一致性檢查
+
+**🔍 AI必須檢查的一致性項目：**
+
+**1. Service方法命名一致性**
+
+```typescript
+// ✅ 標準命名模式
+public getCl040QueryInfo = (): IDlpGridQueryInfo => { ... }
+public updateCl040 = ($event: DlpGridSaveEvent): void => { ... }
+public deleteCl040 = ($event: DlpGridDeleteRowEvent): void => { ... }
+```
+
+**2. 主從關係查詢一致性**
+
+```typescript
+// ✅ 明細表查詢必須使用主表外鍵
+public getCl050QueryInfo = (): IDlpGridQueryInfo => {
+  const selectedRow = this._state.cl040GridRefs.getSelectedRow();
+  return {
+    actionOrSpName: 'PK_CL_CLQ080.PC_CLQ080_QUERY_CL050',
+    queryParams: {
+      payload: { CL050_GOOD_NO: selectedRow?.CL040_GOOD_NO },
+      refCursorKeys: ['vResult', 'vCount'],
+    },
+  };
+};
+```
+
+**3. 錯誤處理一致性**
+
+```typescript
+// ✅ 標準錯誤處理模式
+response: (res: any) => {
+  if (res.resCode != '1') {
+    this._notificationService.showWarning("具體中文錯誤訊息");
+  }
+};
+
+// ✅ Dataset 映射規則 (Table Mapping)
+// 當使用 callSpDataSet 且後端開啟多個游標時，前端接收到的 Dataset 鍵值固定依照順序：
+// Table (第1個 - 通常是資料), Table1 (第2個 - 通常是總筆數), Table2 (第3個)
+const totalCount = res.dsResult?.Table1?.[0]?.TOTAL_COUNT;
+
+```
+
+### 2.1.6 AI 綜合開發檢查清單 (AI Comprehensive Development Checklist)
+
+為確保開發品質並遵循專案規範，請在開發的各個階段確實執行以下檢查：
+
+---
+
+#### **階段一：開發前 (Pre-Development)**
+
+**需求與分析**
+
+- [ ] **確認需求**: 已與使用者充分溝通，完全理解業務需求和功能範圍。
+- [ ] **排除假設**: 已排除所有對業務邏輯的個人假設，所有功能點均有使用者確認。
+- [ ] **參考研究**: 已使用 `rg` 等搜尋工具，找到並深入研讀指定的參考實作 (`DPI580DG` for Grid, `FXR050DG` for Form)。
+
+**環境與路徑**
+
+- [ ] **路徑確認**: 已確認新檔案的目標路徑 (`DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/...`) 是否正確。
+- [ ] **模組確認**: 已確認目標模組 (e.g., `wo`, `dp`) 和地區代碼 (e.g., `dg`, `vn`) 是否存在且正確。
+- [ ] **檔案結構**: 確認新程式直接位於 `[地區]/[功能ID]/` 下，**嚴禁**建立 `pages/` 資料夾。
+
+
+---
+
+#### **階段二：開發中 (During Development)**
+
+**前端 (Frontend)**
+
+- [ ] **架構一致性**: 確認 `State-Control-Service-Component` 的職責劃分清晰，與參考實作模式一致。
+- [ ] **HTML 模板**:
+  - [ ] 確認使用 `<resize-layout>` 進行佈局，未使用原生 `div`/`span` 排版。
+  - [ ] 確認 `dlp-grid` 的屬性為 `[gridRefs]`，而非 `[dlpGridRefs]`。
+  - [ ] 確認 `<ng-template>` 的 `key` 與 `state.ts` 中的 `layoutRefs` 配置完全一致。
+- [ ] **TypeScript**:
+  - [ ] 確認 `import` 路徑符合專案規範 (e.g., `app/shared/states/resize-layout.refs`)。
+  - [ ] 確認 `service` 的返回類型使用 `<IDlpGridQueryInfo>{...}` 類型斷言。
+  - [ ] 確認所有 `subscribe` 和 `response` 的回呼參數 `(res: any)` 都有明確類型或註解。
+  - [ ] 確認主從 `grid` 聯動時，明細查詢有使用主表外鍵，並在主表查詢前清空明細。
+- [ ] **API 呼叫**:
+  - [ ] 確認刪除操作使用 `executeDelete` 方法，而非通用的 `callStoreProcedureDataSet`。
+  - [ ] 確認錯誤處理 `response` 回呼中，是檢查 `res.resCode != '1'`。
+
+**後端 & 資料庫 (Backend & Database)**
+
+- [ ] **PKG 結構**:
+  - [ ] **Spec 簽章**: 確認 Package Specification **禁止包含任何註解**，僅宣告簽章。
+  - [ ] **單一檔案**: 確認 PKG 檔案為包含 Specification 和 Body 的單一檔案。
+  - [ ] **命名規範**: PKG 命名 (`PK_[MODULE]_[PROGRAM_CODE]`) 和程序命名 (`PC_[PROGRAM_CODE]_[ACTION]_[TABLE]`) 符合規範。
+- [ ] **註解區塊強制規範**:
+  - [ ] **分隔線**: 使用 `/* ` 加上 **76 個虛線** (`----------------------------------------------------------------------------`)。
+  - [ ] **對齊**: 所有內容行開頭必須為 **`--   `** (雙橫線後接三個空格)。
+  - [ ] **欄位留空**: `輸入資料:` 與 `注意事項:` 欄位 **必須保持空值** (Empty)。
+  - [ ] **異動紀錄**: 必須包含異動日期、異動者、異動說明。
+- [ ] **PKG 邏輯**:
+  - [ ] 確認查詢包含 `vResult` 和 `vCount` 兩個 `OUT SYS_REFCURSOR`。
+  - [ ] 確認分頁邏輯使用 `Row_Number()` 並搭配 `vSQLStmt` 共用變數。
+  - [ ] 確認 `SQLERRM` **禁止直接寫在 SELECT 中**（必須先賦值給區域變數）。
+  - [ ] 業務阻擋回傳負數代碼 (`'-2'`, `'-3'`)，且 **禁止在 RES_MSG 回傳中文**（訊息附在 SQL 註解中）。
+
+
+---
+
+#### **階段三：開發後 (Post-Development)**
+
+- [ ] **功能驗證**:
+  - [ ] 主從 Grid 聯動功能 (查詢、清空) 正常。
+  - [ ] Grid 的 `suppressAutoSearchAfterReady` 屬性在明細表上設定正確。
+  - [ ] 分頁和總行數顯示正常。
+- [ ] **權限與部署**:
+  - [ ] 確認 Grid 的 `allowInsert`, `allowUpdate`, `allowDelete` 權限設定符合需求。
+  - [ ] **(最重要)** 確認已在對應的 `grant_[模組].sql` 檔案中新增 `GRANT execute` 授權。
+- [ ] **程式碼整潔**:
+  - [ ] 移除所有不必要的 `console.log` 和開發中的註解。
+  - [ ] 確認 Grid 欄位配置無 `editable: false` 等不必要的多餘屬性。
+  - [ ] 確認 SCSS 檔案為空。
+
+### 2.1.7 強制參考模式
+
+**🚨 AI必須強制遵循的參考程式：**
+
+- **Grid功能**: 完全參考 `DPI580DG` 的實作模式
+- **Form功能**: 完全參考 `FXR050DG` 的實作模式
+- **刪除操作**: 使用 `executeDelete` 方法，包含完整的錯誤處理
+- **HTML模板**: 使用正確的屬性名稱和事件綁定
+- **主從關係**: 明細查詢必須使用主表選中行的外鍵資料
+
+**⚠️ 禁止自創模式**：AI不得偏離這些參考程式的標準實作方式
+
+### 2.1.8 重要技術細節補充（基於CLQ080VN實戰經驗）
+
+**🔧 Import路徑標準化**
+
+```typescript
+// ✅ 正確的Import路徑
+import { ResizeLayoutTemplateDirective } from "dlp-shared-directives";
+import { ResizeLayoutRefs } from "app/shared/states/resize-layout.refs";
+import {
+  DlpGridRefs,
+  DlpColDef,
+  EDlpGridColumnType,
+} from "dlp-shared-datagrid";
+import { ECommonApiType } from "dlp-shared-models";
+```
+
+**🔧 Layout Key命名一致性（重要！）**
+
+```typescript
+// State中的key
+layoutRefs = new ResizeLayoutRefs({
+  config: {
+    rows: [
+      {
+        cols: [
+          { widthFlex: 60, key: "cl040GridRefsTemplate" }, // ✅ key名稱
+        ],
+      },
+    ],
+  },
+});
+```
+
+```html
+<!-- HTML中的key必須完全一致 -->
+<ng-template resizeLayoutTemplate key="cl040GridRefsTemplate">
+  <!-- ✅ 相同key -->
+  <dlp-grid [gridRefs]="state.cl040GridRefs"></dlp-grid>
+</ng-template>
+```
+
+**🔧 Grid配置必要屬性**
+
+```typescript
+// ✅ 完整的gridConfig配置
+this.state.cl040GridRefs.gridConfig = {
+  name: "clq080.state.cl040GridRefs", // 必要：Grid名稱
+  apiParams: this._apiParams, // 必要：API參數
+  columnDefs: this._control.getCl040GridColDefs(), // 必要：欄位定義
+  getQueryInfo: () => this._service.getCl040QueryInfo(), // 必要：查詢資訊
+  displayRowCountInfo: true, // 顯示行數資訊
+  getRowTotalCount: (result: any) => {
+    // 必要：總行數計算
+    return result.dsResult.Table1[0].TOTAL_COUNT;
+  },
+  gridHeight: "50vh", // 必要：指定 Grid 高度，建議使用 'vh' (Viewport Height) 單位以適應不同螢幕
+  headerHeight: 40, // 標題高度
+  pageSize: 100, // 分頁大小
+  allowInsert: false, // CRUD權限控制
+  allowUpdate: false,
+  allowDelete: false,
+  suppressAutoSearchAfterReady: true, // 明細表專用：不自動查詢
+};
+```
+
+**🔧 主從Grid聯動標準模式**
+
+```typescript
+// ✅ 主表選擇事件處理
+public onCL040RowSelected = (): void => {
+  const selectedRow = this.state.cl040GridRefs.getSelectedRow();
+  if (selectedRow && selectedRow.CL040_GOOD_NO) {
+    // 重新查詢明細表
+    this.state.cl050GridRefs.executeQueryByInfo();
+  } else {
+    // 清空明細表
+    this.state.cl050GridRefs?.dlpGridApi?.clearGrid();
+  }
+};
+
+// ✅ 主表查詢前清空明細表
+getQueryInfo: () => {
+  this.state.cl050GridRefs?.dlpGridApi?.clearGrid(); // 清空明細
+  return this._service.getCl040QueryInfo();
+}
+```
+
+**🔧 PKG雙Cursor查詢標準**
+
+```sql
+-- ✅ 標準的PKG查詢程序（需要兩個OUT Cursor）
+PROCEDURE PC_CLQ080_QUERY_CL040 (
+    vJson CLOB,
+    vResult OUT SYS_REFCURSOR,  -- 查詢結果
+    vCount OUT SYS_REFCURSOR    -- 總數統計
+);
+
+-- ✅ 實作範例
+OPEN vResult FOR vSQLStmt;
+
+OPEN vCount FOR
+    SELECT COUNT(*) AS TOTAL_COUNT
+    FROM CL040
+    WHERE 1=1;
+```
+
+**🔧 Service查詢方法標準**
+
+```typescript
+// ✅ 標準的查詢資訊提供方法
+public getCl040QueryInfo = (): IDlpGridQueryInfo => {
+  return <IDlpGridQueryInfo>{
+    actionOrSpName: 'PK_CL_CLQ080.PC_CLQ080_QUERY_CL040',
+    queryParams: {
+      payload: {},
+      refCursorKeys: ['vResult', 'vCount'], // 對應PKG的兩個Cursor
+      error: () => {
+        this._notificationService.showWarning('系統發生錯誤，請通知電腦室人員！');
+      },
+    },
+  };
+};
+```
+
+**📋 AI開發完整檢查清單（更新版）**
+
+**開發前檢查**
+
+- [ ] 確認Import路徑正確：使用'dlp-shared-\*'路徑
+- [ ] 確認參考程式：Grid參考DPI580DG
+- [ ] 檢查目標路徑結構正確
+
+**開發中檢查**
+
+- [ ] Grid屬性使用[gridRefs]而非[dlpGridRefs]
+- [ ] Layout key命名在state和template中完全一致
+- [ ] gridConfig包含所有必要屬性
+- [ ] 主從關係包含清空明細表邏輯
+- [ ] PKG包含vResult和vCount兩個Cursor
+
+**開發後檢查**
+
+- [ ] 主從Grid聯動功能正常
+- [ ] suppressAutoSearchAfterReady設定正確
+- [ ] 分頁和總行數顯示正常
+- [ ] CRUD權限設定符合需求
+- [ ] Grid欄位配置無多餘屬性（避免editable等不必要設定）
+- [ ] PKG參數處理完全符合參考程式格式
+- [ ] 開發日期和註解內容準確
+
+### 2.1.9 參考程式嚴格遵循原則（基於CLQ080VN經驗）
+
+**🚨 重要：參考程式的每個細節都有其意義，不可隨意修改**
+
+**PKG格式嚴格遵循**
+
+```sql
+-- ✅ 正確方案：使用 NVL 處理預設排序，確保分頁穩定性
+vSQLStmt := '
+    SELECT
+        Row_Number() Over (ORDER BY ' || NVL(vParams.SortCondition, ' ') || ' [主鍵欄位]) ITEM
+        ,A.*
+    FROM (
+        SELECT [需要的欄位] FROM [表名] WHERE 1=1
+    ) A
+    WHERE ' || vParams.FilterCondition;
+```
+
+**Grid欄位配置嚴格遵循**
+
+```typescript
+// ✅ 簡潔配置，權限由gridConfig統一控制
+{ field: 'FIELD_NAME', headerName: '欄位名稱', sortable: true }
+
+// ✅ Select 欄位必須加上此屬性，否則無法點擊編輯
+{ field: 'TYPE', headerName: '類型', type: EDlpGridColumnType.select, cellRendererEditable: true }
+```
+
+**重要原則：寧可缺少功能，也不要自創格式！**
+
+### 2.1.10 專案檔案結構和格式規範（基於CLQ080VN第二輪經驗）
+
+**🚨 PKG檔案結構錯誤（重要發現）**
+
+**❌ 常見錯誤**：分離Package Specification和Package Body
+
+```
+# 錯誤的檔案結構
+PK_CL_CLQ080.sql        ← Package Specification
+PK_CL_CLQ080_BODY.sql   ← Package Body
+```
+
+**✅ 正確做法**：單一PKG檔案包含完整內容
+
+```sql
+-- 正確：單一檔案包含Specification和Body
+CREATE OR REPLACE PACKAGE PK_CL_CLQ080 AS
+    -- Specification內容
+END PK_CL_CLQ080;
+/
+CREATE OR REPLACE PACKAGE BODY PK_CL_CLQ080 AS
+    -- Body內容
+END PK_CL_CLQ080;
+/
+```
+
+**驗證方法**：
+
+```bash
+# 檢查專案中其他PKG檔案的結構
+ls DLP.SQL/VN/DDL/CL/PK_CL_*.sql
+# 參考PK_CL_CLB110.sql等現有檔案格式
+```
+
+**Service返回類型斷言錯誤**
+
+**❌ 常見錯誤**：缺少類型斷言
+
+```typescript
+// 錯誤：沒有類型斷言
+public getCl040QueryInfo = (): IDlpGridQueryInfo => {
+  return {
+    actionOrSpName: 'PK_CL_CLQ080.PC_CLQ080_QUERY_CL040',
+    // ...
+  };
+};
+```
+
+**✅ 正確做法**：明確的類型斷言（參考DPI580）
+
+```typescript
+// 正確：使用類型斷言
+public getCl040QueryInfo = (): IDlpGridQueryInfo => {
+  return <IDlpGridQueryInfo>{
+    actionOrSpName: 'PK_CL_CLQ080.PC_CLQ080_QUERY_CL040',
+    // ...
+  };
+};
+```
+
+**Import路徑專案特定錯誤**
+
+**❌ 常見錯誤**：使用一般性路徑
+
+```typescript
+// 錯誤：可能在其他專案正確，但此專案錯誤
+import { ResizeLayoutRefs } from "dlp-shared-directives";
+```
+
+**✅ 正確做法**：檢查專案實際使用的路徑
+
+```typescript
+// 正確：此專案的實際路徑
+import { ResizeLayoutRefs } from "app/shared/states/resize-layout.refs";
+```
+
+**🎯 避免假設的強化原則**
+
+**1. 檔案結構不可假設**
+
+- ❌ 假設：「PKG應該分成兩個檔案」
+- ✅ 驗證：檢查專案中現有PKG檔案的實際結構
+
+**2. 語法格式不可假設**
+
+- ❌ 假設：「TypeScript返回對象不需要類型斷言」
+- ✅ 驗證：檢查參考程式的實際格式
+
+**3. Import路徑不可假設**
+
+- ❌ 假設：「應該從shared目錄引入」
+- ✅ 驗證：檢查專案中其他檔案的實際import路徑
+
+**核心原則：任何新開發都必須先完整檢查專案現有實作！**
+
+### 2.2. 精準追蹤定義：從前端互動到後端邏輯
+
+- **核心思想**: 所有程式碼的追蹤，都應始於使用者的互動點。最可靠的分析方法是從 UI 層的行為或配置開始，順著程式執行緒，逐層深入到後端資料庫。
+
+- **追蹤起點**:
+  - 在較舊的程式碼中，UI 的行為與配置可能都定義在 `*.component.ts` 中。
+  - 在較新的程式碼中，為了更好地分離關注點，程式碼會進行拆分：
+    - **行為定義 (`*.component.ts`)**: 使用者操作，如按鈕的 `(click)` 事件、頁籤的 `(selectionChanged)` 事件等。
+    - **元件配置 (`*.control.ts`, `*form.control.ts`)**: `dlp-grid` 的欄位定義、`dlp-form` 的表單欄位配置等。
+  - **分析方法**: 從 `*.component.ts` 的事件處理，或是 `*.control.ts` 的元件配置開始，是分析程式執行流程最可靠的方法。
+
+- **找檔案的技巧 (Tips for Finding Files)**:
+  - **慣例優先**: 根據專案的模組化結構 (`/views/[模組]/[地區]/pages/[頁面]`)，可以推斷出大部分檔案的路徑。
+  - **備用方案 - 內容搜尋**: 專案歷史悠久，部分程式的檔案路徑可能不完全遵循上述慣例 (例如 `DPI580DG` 的實際路徑為 `.../dp/dg/dpi580/`，缺少了 `pages` 層)。如果依照慣例找不到檔案，最可靠的備用方案是**使用程式名稱 (如 `DPI580DG`) 對整個專案進行內容搜尋**。通常可以在路由設定檔 (`*.routing.module.ts`) 中找到程式路徑與實際元件的對應關係，從而定位到正確的檔案。
+
+- **後端追蹤技巧**:
+  - 一旦透過前端追蹤，定位到後端 C# 的 `Repository` 或 `Service`，即可使用 `using` 語句和 `search_file_content` 工具，精準鎖定 `SPName.cs` 中的常數，以及最終的 `.sql` Package 檔案。
+
+### 2.3. 程式檔案搜尋的關鍵原則 (Key Principles for Program File Search)
+
+**核心發現**: 經過實戰驗證，專案中的檔案搜尋需要注意以下重要原則：
+
+#### 2.2.1. 檔案名稱不包含地區代碼 (File Names Don't Include Region Codes)
+
+- **檔案名稱**: 永遠只包含功能代碼，不包含地區代碼
+- **地區區分**: 透過目錄結構或程式內容來實現
+
+**搜尋策略**:
+
+```bash
+# ❌ 錯誤：直接搜尋帶地區代碼的完整程式名
+rg "SDI170TC" --files-with-matches
+
+# ✅ 正確：搜尋功能代碼
+rg "SDI170" --files-with-matches
+```
+
+#### 2.2.2. 目錄結構的不一致性 (Directory Structure Inconsistency)
+
+**重要發現**: 並非所有程式都遵循標準的 `views/[模組]/[地區]/pages/[功能]/` 結構
+
+**實例對比**:
+
+```
+標準結構: views/wo/dg/pages/woc035d/woc035d.component.ts
+實際發現: views/sd/sdi170/sdi170.component.ts (缺少地區和pages層)
+```
+
+**搜尋建議**:
+
+1. 優先搜尋功能名稱，不假設目錄結構
+2. 檢查多個可能的路徑模式
+3. 透過檔案內容確認功能對應關係
+
+#### 2.2.3. 地區代碼的多重含義 (Multiple Meanings of Region Codes)
+
+程式名稱中的地區代碼可能表示：
+
+- **目錄分區**: 實際的檔案目錄結構 (如 WOC035DDG)
+- **業務標識**: 僅作為程式版本或業務流程的標識 (如 SDI170TC)
+- **功能變體**: 同一功能在不同地區的實作差異
+
+### 2.4. 注意隱性關聯：共享狀態資料表 (Beware of Implicit Relations: Shared State Tables)
+
+- **概念**: 部分程式的功能雖然看似獨立，但其行為會受到一個共用資料表的影響，形成隱性耦合。
+- **案例**: `SDI17EDG` 的資料篩選邏輯，完全依賴於 `SD710` 表的內容。而 `WOC620DG` 的還原功能，會直接刪除 `SD710` 的紀錄。因此，在 `WOC620DG` 的操作會直接改變 `SDI17EDG` 的查詢結果。
+
+### 2.5. 警惕相似功能的陷阱：實現方式的多樣性 (Beware of Similar Feature Traps: Diversity of Implementation)
+
+- **概念**: 切勿假設相似的業務功能會有相同的後端實現。
+- **案例**: 專案中有多個「三年」資料的過濾功能。`SDI17EDG` 是透過檢查 `SD710` 備份表來實現；而 `WOI390DG` 則是透過檢查 `WOC20` 主表上的一個旗標欄位 (`WOC20_STYLE_TYPE = 'T'`) 來實現。兩者邏輯完全獨立。
+
+### 2.4. Token 優化核心策略 (Token Optimization Core Strategies)
+
+**🎯 核心原則**: 使用本地搜尋工具 (`Grep`、`rg` 等) 進行大規模程式碼分析**完全不會消耗 token**，這是分析任何大型專案的最佳策略。
+
+**📋 策略優先級**:
+
+1. **🥇 本地搜尋優先** - 0 token 消耗,先搜尋再讀取
+2. **🥈 批次操作** - 一次訊息多工具調用
+3. **🥉 精準讀取** - 使用 offset/limit 只讀需要部分
+4. **🏅 Agent 代理** - 複雜任務交給 Agent 處理
+
+**適用範圍**: 此策略適用於專案中的**所有檔案類型**：
+
+- **資料庫檔案**: `.sql` PKG 檔案的表結構推理
+- **後端程式碼**: `.cs` 檔案的 API 和服務分析
+- **前端程式碼**: `.ts`、`.html` 檔案的元件和路由分析
+- **設定檔案**: `.json`、`.xml` 檔案的配置理解
+- **文件檔案**: `.md`、`.txt` 檔案的資訊查找
+
+**核心搜尋命令範本**:
+
+```bash
+# 統計關鍵字使用頻率
+rg -o "KEYWORD_PATTERN" --no-filename | sort | uniq -c | sort -nr
+
+# 計算總使用量
+rg "KEYWORD" -c | awk -F: '{sum+=$2} END {print "Total:", sum, "occurrences"}'
+
+# 找出相關檔案
+rg "KEYWORD" --files-with-matches
+
+# 顯示使用上下文
+rg "KEYWORD" -A 3 -B 3 --no-filename
+
+# 按檔案類型篩選
+rg "KEYWORD" --type=ts --type=cs --type=sql
+```
+
+**分析流程建議**:
+
+1. **先用本地搜尋** 了解關鍵字分佈和使用頻率
+2. **確定重點檔案** 後再使用 `Read` 工具讀取具體內容
+3. **批次處理** 相似的搜尋需求，避免重複消耗 token
+4. **統計為主** 先取得數據全貌，再深入細節
+
+**Token 節省效益**:
+
+- 一次本地搜尋可分析數萬個檔案而不消耗任何 token
+- 避免盲目讀取大量不相關的檔案內容
+- 在深入分析前先建立程式碼地圖和使用模式理解
+
+**進階 Token 節省策略**:
+
+- **Agent/子任務系統的策略性使用**:
+  - 使用 Agent 或子任務工具啟動專門的代理處理複雜多步驟任務
+  - Agent 可自主進行多輪操作而不消耗主對話的 token
+  - 特別適用於大規模代碼分析、探索性任務、批量重構
+  - 可並行處理不同任務以提高效率
+- **批次工具操作**: 一次訊息中使用多個工具調用，避免來回對話
+- **精準檔案讀取**: 使用 `offset` 和 `limit` 參數只讀取相關部分
+- **建立專案記憶**: 充分利用現有文件和已知模式，減少重複探索
+
+**跨平台適用性**:
+
+- **核心概念通用**: 本地搜尋不消耗 token 的原理適用於所有 AI 輔助開發工具
+- **方法論通用**: 先搜尋統計、再精準讀取的分析流程可應用於任何大型程式碼庫分析
+- **工具實現**: 不同 AI 工具的具體命令語法可能不同，但節省 token 的核心思路相同
+  - **專業工具**: 現代 AI 開發工具通常內建搜尋、檔案操作、Agent 系統等專業功能
+  - **系統工具**: 也可透過執行系統命令 (`grep`、`find`、`awk`) 達到類似效果
+  - **廣泛適用**: 主流 AI 輔助開發工具 (如 Claude Code、Cursor、GitHub Copilot CLI 等) 均支援此概念
+
+## 3. 專案架構 (Project Architecture)
+
+本專案採用了經典的 **模組化 N-Tier 架構**，職責劃分清晰。
+
+- **整體結構**:
+  - 專案是一個大型的 Monorepo，包含了前端、後端、資料庫腳本和工具。
+  - 核心設計思想是 **按業務模組 (Business Module) 進行垂直切分**。
+
+- **後端分層 (Backend Layers)**:
+  1.  **API/表示層 (Presentation Layer)**:
+      - **位置**: `DLP.WebAPI/DLP.WebAPI.[模組]/Controllers/`
+      - **職責**: 處理 HTTP 請求，驗證輸入，並呼叫應用程式服務。這是 API 的入口點。
+  2.  **服務/應用層 (Service/Application Layer)**:
+      - **位置**: `DLP.Model/DLP.Model.[模組]Types/Services/`
+      - **職責**: 實現核心業務邏輯。它協調倉儲 (Repository) 和其他服務來完成一個完整的業務操作。
+  3.  **介面與資料傳輸層 (Interface & DTO Layer)**:
+      - **位置**: `DLP.Model/DLP.Model.[模組]Types/Interface/` 和 `DLP.Model/DLP.Model.[模組]Types/DTO/`
+      - **職責**: 定義服務和倉儲的介面 (Interface)，以及用於在各層之間傳輸資料的資料傳輸物件 (DTO)。這是實現依賴反轉和分層解耦的關鍵。
+  4.  **資料存取層 (Data Access Layer)**:
+      - **位置**: `DLP.Model/DLP.Model.[模組]/Repositories/`
+      - **職責**: 負責與資料庫進行互動，執行 SQL 查詢和命令。實現了倉儲模式 (Repository Pattern)。
+
+- **前端結構 (Frontend Structure)**:
+  - **位置**: `DLP.Web/DLP.Web.AppPortal/ClientApp/`
+  - **架構**: 同樣採用模組化設計，與後端模組相對應。
+    - `src/app/views/[模組]/[地區]/` 目錄下包含了該模組針對特定地區的所有前端資源 (例如 `views/wo/dg/pages/`)。
+    - **Pages**: 主要的頁面元件。
+    - **Controls**: 可複用的 UI 控制項。**常見位置為 `src/app/views/[模組]/controls/` 或 `src/app/views/[模組]/[子模組]/controls/`。**
+    - **Services**: 用於呼叫後端 API 的 Angular 服務。**常見位置為 `src/app/views/[模組]/services/` 或 `src/app/views/[模組]/[子模組]/services/`。**
+    - **States**: 用於狀態管理 (可能使用 NGXS、NGRX 或類似模式)。**常見位置為 `src/app/views/[模組]/states/` 或 `src/app/views/[模組]/[子模組]/states/`。**
+
+## 4. 核心設計模式與慣例 (Core Design Patterns & Conventions)
+
+- **模組化 (Modularity)**:
+  - 整個應用程式按功能模組進行了嚴格的垂直劃分，模組由一個 **兩個字母的代碼** 標識 (例如 `WO`、`AP`、`DP`、`EM`)。
+  - 每個模組都貫穿所有技術層：`DLP.WebAPI.WO`, `DLP.Model.WO`, `DLP.Model.WOTypes`, `ClientApp/src/app/views/wo`。
+  - 地區代碼 (`dg`、`tc`、`vn`) 也被用作一層命名空間。在 `Controllers`、`Services`、`Repositories` 等多個層級中，會再以地區代碼建立子資料夾來存放特定地區的程式碼 (例如 `DLP.WebAPI.WO/Controllers/dg/`)。
+
+- **命名慣例 (Naming Conventions)**:
+
+  **後端 (C#) - PascalCase 大駝峰:**
+  - **Controller**: `[頁面名稱]Controller.cs` (如 `WOQ999Controller.cs`)
+  - **Service**: `[頁面名稱]Service.cs` (如 `WOQ999Service.cs`)
+  - **Repository**: `[頁面名稱]Repository.cs` (如 `WOQ999Repository.cs`)
+  - **Interface**: `I[名稱].cs` (如 `IWOQ999Repository.cs`)
+  - **DTO**: `[頁面名稱]DTO.cs` (如 `WOQ999DTO.cs`)
+
+  **前端 (TypeScript) - kebab-case 小寫串接:**
+  - **元件檔案**: `[頁面名稱].component.ts` (如 `woq999.component.ts`)
+  - **服務檔案**: `[頁面名稱].service.ts` (如 `woq999.service.ts`)
+  - **狀態檔案**: `[頁面名稱].state.ts` (如 `woq999.state.ts`)
+  - **控制檔案**: `[頁面名稱].control.ts` (如 `woq999.control.ts`)
+  - **頁面目錄**: `[頁面名稱]/` (**kebab-case 小寫**, 直接位於地區目錄下, 如 `views/wo/dg/woq999/`)
+
+  **Component 內部屬性命名規範 (參考 PMI410):**
+  - **State**: `public [程式名稱小寫]: [State類別]` (如 `public pmi410: Pmi410State`)
+  - **Control**: `private _[程式名稱小寫]Control: [Control類別]` (如 `private _pmi410Control: Pmi410Control`)
+  - **Service**: `private _[程式名稱小寫]Service: [Service類別]` (如 `private _pmi410Service: Pmi410Service`)
+  - **HTML 引用**: 模板中應使用小寫程式名稱存取 State (如 `pmi410.gridRefs`)。
+
+  **資料庫 (Oracle) - UPPER_SNAKE_CASE 大寫底線:**
+  - **Package**: `PK_[模組]_[頁面名稱].sql` (如 `PK_WO_WOQ999.sql`)
+  - **資料表**: `[表名]` (如 `WO020`, `SD710`)
+  - **欄位**: `[表名]_[欄位名]` (如 `WO020_LOT_NO`, `SD710_BACKUP_DATE`)
+  - **變數**: `v[名稱]` (如 `vResult`, `vCount`, `vJson`, `vParamsObj`)
+
+  **其他慣例:**
+  - **地區後綴**: 程式名稱末尾的兩個大寫字母代表地區代碼 (如 `WOB368DG` 中的 `DG` 代表東莞)
+  - **模組代碼**: 兩個大寫字母 (如 `WO` 工單、`SD` 銷售、`DP` 開發採購)
+
+- **依賴注入 (Dependency Injection)**:
+  - .NET Core 和 Angular 皆內建支援 DI。專案大量使用介面 (Interface) 和服務注入來降低耦合度，是實現分層架構的基礎。
+
+- **倉儲模式 (Repository Pattern)**:
+  - 明確使用倉儲模式將資料庫操作封裝起來，使得服務層不需要關心具體的 SQL 實現。
+
+- **前端服務注入慣例 (Frontend Service Injection Convention)**:
+  - 為了確保服務 (Service)、狀態 (State) 以及控制項 (Control) 的可注入性和單例模式，在建立 `service.ts`、`control.ts` 和 `state.ts` 檔案時，應在類別定義上方加上 `@Injectable` 裝飾器，並設定 `providedIn: 'root'`。
+  - **範例 (`.service.ts`、`.control.ts`、`.state.ts`)**:
+
+    ```typescript
+    import { Injectable } from "@angular/core";
+
+    @Injectable({
+      providedIn: "root",
+    })
+    export class YourClassName {
+      // ...
+    }
+    ```
+
+### 4.1. 架構例外與注意事項 (Architectural Exceptions & Notes)
+
+專案在長期開發過程中，出現了部分模組檔案與其對應目錄不一致的情況，這與文件前面章節定義的標準架構存在偏差。記錄這些例外是為了讓未來開發與分析能更準確地進行。
+
+- **前端檔案歸檔不一致 (Frontend File Archive Inconsistency)**:
+  - **狀況**: 大量屬於 **`SD` (銷售) 模組** 的前端元件被歸檔在 **`WO` (工單) 模組** 的目錄下。
+  - **涉及路徑**: `DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/wo/`
+  - **提醒**: 尋找 `SD` 模組的前端資源時，建議同時搜尋 `views/sd/` 和 `views/wo/` 兩個路徑。
+
+- **資料庫腳本歸檔不一致 (Database Script Archive Inconsistency)**:
+  - **狀況**: 此現象在資料庫層級更為普遍，大量的 `.sql` (PKG) 檔案，其實際模組歸屬與其所在的目錄不一致。
+  - **主要情況**: 發現 **119個** `SD` 模組的 `.sql` 檔案位於 `DLP.SQL/.../DDL/WO/` 路徑下。
+  - **反向情況**: 同時也發現 `WO` 模組的檔案被放在 `SD` 目錄下。
+  - **提醒**: 在分析或修改資料庫腳本時，不能單純依賴目錄名稱，建議檢查檔案本身的命名 (`PK_SD_*` 或 `PK_WO_*`) 來確定其真實的模組歸屬。
+
+## 5. 前端網格元件分析 (Frontend Grid Components Analysis)
+
+專案中主要使用了三種網格元件：`<dlp-grid>`、`<dlp-wo-grid>` 和 `<ag-grid-angular>`。它們各自有不同的用途和使用模式。
+
+- **`<dlp-grid>`**
+  - **用途**: 這是專案中最通用和廣泛使用的網格元件，**也是新程式開發所使用的主要元件**，用於顯示和管理各種資料。它提供了豐富的互動功能。
+  - **實現**: `dlp-grid` 是基於 **AG-Grid** (`@ag-grid-community/angular` 版本 `~27.3.0`) 封裝的自定義網格元件。它與 `<dlp-wo-grid>` 一同被打包在本地 NPM 套件 `dlp-shared-datagrid` 中，並作為專案的標準網格方案。
+  - **使用方式**:
+    - **`[gridRefs]` 屬性**: 這是最核心的屬性，用於綁定一個 `GridRefs` 物件，該物件包含了網格的配置（如列定義、資料來源、行為等）。
+    - **高度設定 (擇一策略)**:
+      - **容器控權 (Container Control)**: 若 Grid 放置於固定高度的容器內 (如 `<resize-layout>` 的固定列)，請設定 `gridHeight: '100%'`，讓 Grid 自動填滿容器。
+      - **內容自決 (Content Control)**: 若 Grid 獨立放置於流式版面中，請使用 `vh` 單位 (如 `'50vh'`) 設定明確高度，確保響應式體驗。
+      - **切勿混用**: 避免在固定高度容器內設定 `vh`，以免產生雙重滾動條。
+
+- **`<dlp-wo-grid>`**
+  - **用途**: 這是一個與 `<dlp-grid>` 類似的通用網格元件，同樣由 `dlp-shared-datagrid` 套件提供。它針對特定業務場景 (如工單) 提供了特定的預設行為或配置。
+  - **使用方式**:
+    - **`[columns]` 屬性**: 用於定義網格的列配置。
+    - **`[queryApi]` 屬性**: 用於指定資料查詢的後端 API 端點。
+
+- **`<ag-grid-angular>`**
+  - **用途**: 這是 AG-Grid 的原生 Angular 元件。專案的核心網格功能是透過封裝此元件來實現的。開發者應優先使用專案提供的 `<dlp-grid>` 或 `<dlp-wo-grid>` 元件，僅在需要 AG-Grid 特定高級功能且現有封裝不滿足需求時，才考慮直接使用它。
+
+## 6. 前端表單元件分析 (Frontend Form Components Analysis)
+
+專案中主要使用了三種表單相關的元件：`<dlp-form>`、`<mat-form-field>` 和原生的 `<form>` 標籤。
+
+- **`<dlp-form>`**
+  - **用途**: 這是專案中最主要且廣泛使用的表單元件，**也是新程式開發所使用的主要元件**，用於管理表單的結構、驗證和資料綁定。
+  - **實現**: `dlp-form` 是一個高度封裝的自定義表單元件，被打包在本地 NPM 套件 `dlp-shared-form` 中，作為專案標準的表單解決方案。
+  - **使用方式**:
+    - **`[formRefs]` 屬性**: 這是最核心的屬性，用於綁定一個表單的配置參考物件，該物件定義了表單的欄位、驗證規則、預設值等。
+
+- **`<mat-form-field>`**
+  - **用途**: 這是 Angular Material 提供的表單欄位容器，用於提供一致的視覺樣式和行為，例如浮動標籤、提示文字、錯誤訊息等。
+  - **實現**: 專案在表單的 UI 層面使用了 Angular Material 來確保一致性和良好的使用者體驗，它通常被 `<dlp-form>` 元件在內部使用。
+
+- **`<form>` (原生 HTML 標籤)**
+  - **用途**: 原生 HTML `<form>` 標籤與 Angular 的響應式表單 (Reactive Forms) 結合，用於管理表單狀態和驗證。
+  - **實現**: 在一些基礎或特定的場景下，專案直接使用了 Angular 的響應式表單功能來管理表單狀態和驗證，這提供了更大的靈活性。
+
+## 7. 可調整大小區塊元件分析 (Resizable Layout Component Analysis)
+
+專案中使用了 `<resize-layout>` 這個共享元件來建立可由使用者調整大小的區塊，常見於一個主表格搭配一個明細表格的場景。此元件的實作完全由狀態驅動，模式相當固定。
+
+- **核心元件**: `<resize-layout>`
+- **狀態管理**: `ResizeLayoutRefs` from `dlp-shared-layout`
+- **參考範例**: `DPI580DG`
+
+#### 步驟一: 在 `state.ts` 中定義版面配置
+
+所有版面的設定都集中在 `state.ts` 中。
+
+1.  **匯入 `ResizeLayoutRefs`**: 從 `app/shared/states/resize-layout.refs` 中匯入。
+2.  **宣告屬性**: 在 State 類別中宣告屬性。
+3.  **初始化與設定**: 在 `init()` 方法中，實例化 `ResizeLayoutRefs`。**規範要求：垂直方向 (rows) 使用固定 `height`，水平方向 (cols) 使用 `widthFlex`。**
+
+```typescript
+// *.state.ts
+import { ResizeLayoutRefs } from "app/shared/states/resize-layout.refs";
+
+@Injectable({ providedIn: "root" })
+export class YourPageState {
+  public layoutRefs: ResizeLayoutRefs;
+
+  public init(): void {
+    this.layoutRefs = new ResizeLayoutRefs({
+      config: {
+        rows: [
+          {
+            height: 350, // 垂直列使用固定高度 (height)
+            cols: [
+              {
+                key: "leftPartTemplate",
+                widthFlex: 40, // 水平欄位使用彈性寬度 (widthFlex)
+              },
+              {
+                key: "rightPartTemplate",
+                widthFlex: 60,
+              },
+            ],
+          },
+          {
+            height: 550,
+            cols: [
+              {
+                key: "bottomPartTemplate",
+                widthFlex: 100,
+              },
+            ],
+          },
+        ],
+      },
+    });
+  }
+}
+```
+
+- **`rows` / `cols`**: 結構化定義。
+- **`height`**: 垂直列的高度。
+- **`widthFlex`**: 水平欄位的寬度比例。
+- **`key`**: 每個區塊的唯一識別碼，用於和 HTML 範本中的內容進行配對。
+
+#### 步驟二: 在 `component.html` 中宣告內容區塊
+
+HTML 範本的結構非常簡潔，僅宣告容器與內容樣板。
+
+1.  **主容器**: 使用 `<resize-layout>`，並綁定 `[config]` 與 `[templates]`。
+2.  **內容樣板**:
+    - 每一個區塊的內容都放在一個 `<ng-template>` 標籤中。
+    - 使用 `resizeLayoutTemplate` 指令來標記這是一個內容樣板。
+    - `key` 屬性的值必須和 `state.ts` 中 `parts` 陣列裡定義的 `key` 完全對應。
+
+```html
+<!-- *.component.html -->
+
+<resize-layout
+  [config]="state.layoutRefs.config"
+  [templates]="layoutTemplates"
+></resize-layout>
+
+<!-- 上方區塊的內容 (key 與 state 中的定義對應) -->
+<ng-template resizeLayoutTemplate key="topPartTemplate">
+  <dlp-grid [gridRefs]="state.topGridRefs"></dlp-grid>
+</ng-template>
+
+<!-- 下方區塊的內容 (key 與 state 中的定義對應) -->
+<ng-template resizeLayoutTemplate key="bottomPartTemplate">
+  <dlp-grid [gridRefs]="state.bottomGridRefs"></dlp-grid>
+</ng-template>
+```
+
+#### 步驟三: 在 `component.ts` 中連結樣板
+
+Component 的職責是作為橋樑，將 State 和 Template 連結起來。
+
+- **`@ViewChildren`**: 使用此裝飾器來自動取得 HTML 中所有被 `resizeLayoutTemplate` 指令標記的 `<ng-template>`。
+- **`ngOnInit`**: 確保呼叫 `state.init()`，以建立 `layoutRefs` 的設定。
+
+```typescript
+// *.component.ts
+import { ResizeLayoutTemplateDirective } from "dlp-shared-directives";
+
+@Component({
+  /* ... */
+})
+export class YourPageComponent implements OnInit {
+  @ViewChildren(ResizeLayoutTemplateDirective)
+  layoutTemplates!: QueryList<ResizeLayoutTemplateDirective>;
+
+  constructor(public state: YourPageState) {} // 需從 ../../states/ 匯入
+
+  ngOnInit(): void {
+    this.state.init(); // 執行 state 的初始化
+    // ... 其他元件的設定
+  }
+}
+```
+
+這個模式將複雜的版面調整大小功能，簡化為單純的「宣告」與「設定」，讓開發者可以專注於區塊內的業務邏輯。
+
+## 8. 資料庫套件 (PKG) 分析
+
+專案中的資料庫操作主要透過 Oracle PL/SQL 套件 (Package) 來實現。這些套件封裝了複雜的業務邏輯和資料庫操作，提供了一致且安全的資料存取介面。
+
+- **檔案位置與命名慣例**
+  - **位置**: `DLP.SQL/[地區]/DDL/[模組]/` 目錄下。
+  - **命名慣例**: 通常以 `PK_[模組]_[頁面名稱].sql` 命名，例如 `PK_DP_DPI580.sql`。
+    - **資料表欄位**: 欄位名稱通常以其所屬的資料表名稱作為前綴，例如 `WO020.WO020_LOT_NO`。
+
+- **套件結構**
+  每個套件通常包含兩個主要部分：
+  1.  **套件規格 (Package Specification)**:
+      - 定義了套件中所有公開的程序 (PROCEDURE) 和函數 (FUNCTION) 的介面。
+      - 只包含程序/函數的名稱、參數列表和返回類型，不包含具體實現。
+  2.  **套件主體 (Package Body)**:
+      - 包含了套件規格中所有程序和函數的具體實現邏輯。
+      - 可以包含私有的程序、函數、變數和游標，這些在套件外部是不可見的。
+
+- **核心功能與參數慣例**
+  - **輸入參數 `vJson CLOB`**:
+    - 大多數程序都接收一個 `CLOB` 類型的 `vJson` 參數。
+    - 這表示前端或後端傳遞的資料是以 JSON 格式封裝的。
+    - 程序內部使用 `JSON_TABLE` 函數來解析 `vJson` 中的 JSON 資料，並將其轉換為可查詢的表格形式。這使得資料庫程序能夠靈活地處理結構化的輸入資料。
+  - **輸出參數 `SYS_REFCURSOR`**:
+    - 查詢類型的程序通常會輸出一個或多個 `SYS_REFCURSOR` 類型的參數。
+    - `SYS_REFCURSOR` 是一個指向查詢結果集的指標，允許將查詢結果返回給呼叫者 (例如後端應用程式)。
+
+- **從 PL/SQL 套件推斷資料表結構與關係**
+
+  **重要提醒：專案中沒有儲存完整的資料庫 Schema 定義檔案**，所有的資料表結構資訊都必須從大量的 PKG (Package) 檔案中進行逆向推斷。這是分析此專案資料庫架構的關鍵技能。
+
+  由於 `.sql` 檔案主要包含 PL/SQL 套件，而非直接的 `CREATE TABLE` 語句，我們需要透過分析套件的程式碼來推斷資料庫的 Schema 資訊：
+
+  **1. 分析 DML (Data Manipulation Language) 語句**
+  - **INSERT 語句分析**: 從 `INSERT INTO table_name (col1, col2, ...) VALUES (...)` 中推斷表格欄位名稱和資料類型
+  - **UPDATE 語句分析**: 從 `UPDATE table_name SET col1 = value1` 中識別可更新的欄位
+  - **DELETE 語句分析**: 從 `DELETE FROM table_name WHERE condition` 中了解刪除條件和相關欄位
+
+  **2. 分析 SELECT 語句和 JOIN 條件**
+  - **欄位列舉**: 從 `SELECT col1, col2, col3 FROM table_name` 中識別表格的所有欄位
+  - **JOIN 關係**: 從 `JOIN table_b ON table_a.id = table_b.foreign_id` 中推斷表格間的關聯關係
+  - **WHERE 條件**: 從查詢條件中了解欄位的資料類型和約束條件
+
+  **3. 檢查游標 (Cursor) 定義**
+  - **CURSOR 宣告**: 游標定義通常包含完整的 SELECT 語句，是推斷表結構的重要來源
+  - **參數化游標**: 從游標參數可以推斷查詢條件和相關欄位的資料類型
+
+  **4. 觀察變數宣告中的 %ROWTYPE 和 %TYPE**
+  - **%ROWTYPE**: `variable_name table_name%ROWTYPE` 表示該變數包含整個表格的所有欄位
+  - **%TYPE**: `variable_name table_name.column_name%TYPE` 表示該變數與指定欄位具有相同的資料類型
+  - **記錄類型**: 自定義的 RECORD 類型定義也能反映表格結構
+
+  **5. JSON_TABLE 函數分析**
+  - 在使用「JSON 承載模式」的程序中，`JSON_TABLE` 函數的 COLUMNS 定義直接映射了前端傳遞的資料結構
+  - 這些定義有助於理解前端表單欄位與資料庫欄位的對應關係
+
+  **6. 實用推斷技巧**
+  - **欄位命名規律**: 專案中欄位通常以表格名稱作為前綴，如 `WO020_LOT_NO` 表示 `WO020` 表的 `LOT_NO` 欄位
+  - **主鍵推斷**: 通常以表格名稱加上 `_NO` 或 `_ID` 作為主鍵，如 `WO020_NO`
+  - **外鍵關係**: 當某個欄位名稱與其他表格的主鍵相似時，通常存在外鍵關係
+  - **資料類型推斷**: 從 Oracle 函數使用方式推斷資料類型（如 `TO_DATE`, `TO_NUMBER` 等）
+
+  **7. 系統性分析方法**
+  - **批量搜尋**: 使用 `grep` 或類似工具搜尋特定表格名稱在所有 PKG 檔案中的出現情況
+  - **交叉驗證**: 同一個表格在不同 PKG 中的使用方式應該一致，可以互相驗證推斷結果
+  - **版本演化**: 注意不同地區或不同版本的 PKG 可能反映表結構的演化過程
+
+- **PKG Body 程序註解規範 (Procedure Comments Convention)**
+
+  在 `PACKAGE BODY` 中，每個 `PROCEDURE` 或 `FUNCTION` 的定義前方，**必須**包含標準格式的註解區塊。
+
+  **標準範例：**
+
+  ```sql
+  /*
+  --------------------------------------------------------------------------
+  --   名稱: PC_APB130_QUERY_AP110
+  --   功能說明: 查詢 AP110 應付帳款主檔
+  --   輸入資料: vJson (StartRow, EndRow, FilterCondition, SortCondition)
+  --   注意事項: 參考 APB130.txt Block AP110
+  --   原設計者: Zeke_Chen
+  --   設立日期: 2026/01/20
+  --   ------------------------ 異動紀錄明細 -------------------------------
+  --  異動日期  異動者    異動說明
+  */
+  PROCEDURE PC_APB130_QUERY_AP110(
+      vJson CLOB,
+      vResult OUT SYS_REFCURSOR,
+      vCount OUT SYS_REFCURSOR
+  ) IS ...
+  ```
+
+  **註解欄位說明：**
+  - **名稱**: 完整的 Procedure 或 Function 名稱。
+  - **功能說明**: 簡述此程式的目的與業務邏輯。
+  - **輸入資料**: 條列傳入參數，若為 `vJson` 則註明內含的關鍵欄位。
+  - **注意事項**: 特別的邏輯判斷或參考文件 (如 TXT 檔案)。
+  - **原設計者**: 填寫開發者姓名 (如 `Zeke_Chen`)。
+  - **設立日期**: 格式為 `YYYY/MM/DD`。
+  - **異動紀錄**: 後續修改時需在此增行記錄。
+
+## 9. 前後端資料互動模式 (Frontend-Backend Data Interaction Patterns)
+
+在分析程式碼的過程中，我們發現了至少兩種主要的前後端資料互動模式。理解這兩種模式，是快速定位後端邏輯的關鍵。
+
+---
+
+**模式 A: 前端直達模式 (Frontend Direct-Access Pattern)**
+
+此模式是專案中 `<dlp-grid>` 和 `<dlp-form>` 等標準元件最常見的資料載入方式。其核心思想是前端直接定義要呼叫的資料庫預存程序 (Stored Procedure)，由一個通用的後端 API 代理執行。
+
+- **呼叫鏈**: `Component -> Service (Frontend) -> [通用 API] -> PKG`
+- **範例**: `WOU500DG`, `DPI580DG`
+- **特徵**:
+  - 追蹤路徑短，邏輯集中在前端。
+  - 後端 `Controller` 通常是通用的，不會針對單一頁面撰寫特定 `action`。
+  - 非常適合標準的 CRUD 操作。
+
+- **追蹤步驟 (以 `WOU500DG` 為例)**:
+  1.  **起點 (`*.component.ts` 或 `*.control.ts`)**: 從 `wou500.component.ts` 開始，在 `ngOnInit` 方法中找到目標 grid (例如 `wob050GridRefs`) 的 `gridConfig` 設定。對於 Form 而言，欄位的定義則可能在 `wou500-form.control.ts` 中。
+  2.  **尋找 `getQueryInfo`**: 在 `gridConfig` 中，定位到 `getQueryInfo` 屬性。這是一個函式，定義了資料的來源。
+  3.  **鎖定預存程序**: 在 `getQueryInfo` 函式中，直接找到 `actionOrSpName` 屬性，其值 `PK_WO_WOU500.PC_WOU500_QUERY_WOB050` 就是要執行的 **Package.Procedure** 名稱。
+  4.  **定位 SQL 檔案**: 根據 Package 名稱 `PK_WO_WOU500`，使用 `glob` 工具尋找對應的 `DLP.SQL/DG/DDL/WO/PK_WO_WOU500.sql` 檔案，即可找到 SQL 原始碼。
+
+---
+
+**模式 B: 標準 API 分層模式 (Standard API Layered Pattern)**
+
+此模式是較傳統的 N-Tier 架構實現，呼叫鏈路較長，每一層各司其職。當業務邏輯較複雜，或不適合使用標準元件的 `getQueryInfo` 機制時，會採用此模式。
+
+- **呼叫鏈**: `Component -> Service (Frontend) -> API (Frontend) -> Controller (Backend) -> Service (Backend) -> Repository (Backend) -> PKG`
+
+- **範例**: `WOQ390DG`
+
+### 9.1. API 服務選擇指引 (API Service Selection Guide)
+
+在前端 Service 中呼叫後端功能時，必須根據功能類型選擇正確的 API 服務。
+
+| 服務名稱 | 來源 (Package) | 主要用途 | 核心方法 |
+
+| :--- | :--- | :--- | :--- |
+
+| **`ApiService`** | `dlp-shared-services` | **執行 Stored Procedure** (CRUD、業務操作) | `callStoreProcedure`, `callSpDataSet` |
+
+| **`SharedApi`** | `app/shared/api/shared.api` | **報表功能** (產生 PDF、直接列印) | `getReportPost`, `directPrint` |
+
+**🚨 重要規範**: 絕對禁止使用 `SharedApi` 來呼叫一般的 Stored Procedure，因為它不具備處理資料庫回傳結果的功能。
+
+---
+
+- **特徵**:
+  - 呼叫鏈長，職責劃分清晰。
+  - 需要在後端針對頁面功能撰寫特定的 `Controller` 和 `Service`。
+  - 前端 `service.ts` 通常會注入一個 `api.ts` 檔案來處理 HTTP 請求。
+
+- **追蹤步驟 (以 `WOQ390DG` 為例)**:
+  1.  **起點 (`*.component.ts` 或 `*.control.ts`)**: 從 `woq390.component.ts` 或 `woq390.control.ts` 開始，找到觸發資料查詢的事件，例如按鈕的 `(click)` 事件，或是 grid 的 `(selectionChanged)` 事件。
+  2.  **追蹤至前端 Service**: 事件處理函式會呼叫注入的前端服務，例如 `this._service.searchData()`。
+  3.  **追蹤至前端 API**: 在 `woq390.service.ts` 中，會發現它注入並呼叫了 `woq390.api.ts`。
+  4.  **鎖定後端 Action**: 在 `woq390.api.ts` 中，可以找到呼叫的後端 `action` 名稱，例如 `this.call('QueryWOC20', dto)`。
+  5.  **定位後端 Controller**: 根據 `programNo` (`WOQ390`) 和 `action` (`QueryWOC20`)，可以推斷出後端對應的 `Controller` 是 `DLP.WebAPI.WO/Controllers/DG/WOQ390Controller.cs`。
+  6.  **依序追蹤後端層級**: 讀取 `Controller` 檔案，會發現它注入了後端的 `Service` (`WOQ390Service`)；讀取後端 `Service`，會發現它注入了 `Repository` (`IWOC20Repository`)。
+  7.  **找到預存程序**: 在 `WOC20Repository.cs` 中，最終會找到執行的預存程序常數，例如 `SPName.WOQ390QueryWOC20Data`。
+  8.  **定位 SQL 檔案**: 透過 `SPName.cs` 和 `PK_WO_WOQ390.sql`，最終找到 SQL 原始碼。
+
+## 10. 資料庫參數傳遞模式
+
+    - **篩選條件極簡寫法**: 若前端 LOV 保證會傳入包含 1=1 的 FilterCondition，後端應直接串接：WHERE ' || vParams.FilterCondition;，不需額外判斷。
+    - **進階篩選處理 (FilterCondition)**:
+        - **標準模式**: 若 LOV 需支援前端 Grid 的進階篩選 (Filter Row)，必須在 WHERE 子句中動態串接 Params.FilterCondition。
+        - **極簡模式**: 若僅需支援關鍵字搜尋且確定不需進階篩選，可省略 FilterCondition 處理 (參考 APR130)。
+    - **SQL 格式潔癖**: 嚴禁行末空白；變數宣告區塊 (IS ~ BEGIN) 間不可留空行。
+
+- **🚨 排序條件處理 (SortCondition)**:
+  - **不使用 NVL**: 在 ORDER BY 中處理 SortCondition 時，應直接使用字串串接，不需使用 NVL。
+  - **串接模式**: 應寫為 ORDER BY ' || vParams.SortCondition || ' TABLE_ALIAS.DEFAULT_COLUMN。
+  - **原理**: 前端會自動處理欄位名與結尾逗號；若前端傳 NULL，Oracle 的字串串接會將其視為空字串，直接套用後方的預設欄位排序。 (Database Parameter Passing Patterns)
+
+在分析資料庫 Package 時，同樣發現了兩種主流的參數傳遞模式。
+
+- **模式 A: 傳統獨立參數模式 (Classic Individual Parameters)**
+  此模式將每個查詢條件作為獨立的參數傳遞給預存程序。
+  - **範例:** `WOU089DG` (`PK_WO_WOU089.PRO_QUERY_WOU089_WO08D`)
+  - **PL/SQL 程序定義:**
+    ```sql
+    PROCEDURE PRO_QUERY_WOU089_WO08D (
+        vStartRow              NUMBER,
+        vEndRow                NUMBER,
+        vFilterCondition       VARCHAR2,
+        vSortCondition         VARCHAR2,
+        vData        OUT SYS_REFCURSOR,
+        vCount        OUT SYS_REFCURSOR
+    )
+    ```
+  - **C# Repository 呼叫:**
+    ```csharp
+    var parameters = new ArrayList();
+    parameters.Add(new object[3] { "vStartRow", OracleDbType.Decimal, dto.StartRow });
+    parameters.Add(new object[3] { "vEndRow", OracleDbType.Decimal, dto.EndRow });
+    parameters.Add(new object[3] { "vFilterCondition", OracleDbType.Varchar2, dto.FilterCondition });
+    // ...
+    dto.dsResult = oracleDLP.ExecProcedureDataSet(SPName.WOU089QueryWO08DData, parameters);
+    ```
+  - **分析:**
+    - **優點:** 介面清晰，參數直觀。
+    - **缺點:** 缺乏彈性。每當需要新增查詢條件時，都必須修改資料庫程序的簽名，以及所有呼叫它的 C# 程式碼。
+
+- **模式 B: JSON 承載模式 (JSON Payload)**
+  此模式將所有參數打包成一個 JSON 物件，並將其作為單一的 `CLOB` 參數傳遞給預存程序。這是專案中更現代且靈活的作法。
+  - **範例:** `DPI580DG` (`PK_DP_DPI580.PC_DPI580_QUERY_DP580`)
+  - **PL/SQL 程序定義:**
+    ```sql
+    PROCEDURE PC_DPI580_QUERY_DP580 (
+        vJson CLOB, -- 所有參數都在這裡
+        vResult OUT SYS_REFCURSOR,
+        vCount OUT SYS_REFCURSOR
+    )
+    ```
+  - **PL/SQL 程序內部 (標準實作):**
+    使用 `JSON_TABLE` 解析 `vJson`，並使用 **共用 `vSQLStmt`** 變數來同時支援分頁查詢與總數計算。**注意 `SortCondition` 與 `FilterCondition` 不應使用 `NVL` 包裹**，以避免拼接錯誤。同時，**`PATH` 定義不應包含 `payload.` 前綴** (除非前端傳入的 JSON 結構明確包含該層級)。
+
+    ```sql
+    -- 1. 解析參數
+    CURSOR vParamsObj IS
+        SELECT * FROM JSON_TABLE(vJson, '$'
+            COLUMNS(
+            StartRow            PATH '$.StartRow',
+            EndRow              PATH '$.EndRow',
+            FilterCondition     VARCHAR2(4000) PATH '$.FilterCondition',
+            SortCondition       VARCHAR2(4000) PATH '$.SortCondition',
+            MOLD_NO_LIST        PATH '$.MOLD_NO_LIST'
+        ))jt;
+
+    -- 2. 建構共用 SQL (標準巢狀結構)
+    -- 內層 A: 處理原始資料與靜態業務條件
+    -- 外層: 處理 Row_Number (排序) 與 FilterCondition (前端動態過濾)
+    vSQLStmt := '
+        SELECT
+            Row_Number() Over (ORDER BY ' || vParams.SortCondition || ' A.DP580_MOLD_NO) ITEM,
+            A.*
+        FROM (
+            SELECT * FROM DP580 WHERE 1=1 -- 靜態業務條件寫在這裡
+        ) A
+        WHERE ' || vParams.FilterCondition;
+
+    -- 3. 分頁查詢 (包裹 vSQLStmt)
+    OPEN vResult FOR 'SELECT A.* FROM ( ' || vSQLStmt || ' ) A WHERE A.ITEM >= ' || vParams.StartRow || ' AND A.ITEM <= ' || vParams.EndRow;
+
+    -- 4. 總數計算 (包裹 vSQLStmt)
+    OPEN vCount FOR 'SELECT COUNT(*) TOTAL_COUNT FROM ( ' || vSQLStmt || ' )';
+    ```
+
+  - **分析:**
+    - **優點:** **極高的靈活性**。前端可以輕易地在 JSON 中增減查詢條件，而後端 C# 和資料庫程序的介面**完全不需要修改**。
+    - **標準化:** `vSQLStmt` 共用確保了資料一致性，且寫法簡潔。
+    - **缺點:** 動態 SQL 拼接需注意語法正確性 (特別是 `WHERE` 子句與 `ORDER BY` 子句的拼接)。
+
+  **結論:** 在開發新功能時，應優先考慮採用 **模式 B (JSON 承載模式)**，並嚴格遵守上述的 SQL 建構標準。
+
+### 10.6 模式 F: 輕量級更新模式 (Lightweight Update Pattern)
+
+針對簡單的狀態切換（如勾選/取消勾選、單一旗標異動），不涉及大量資料傳輸時，應採用此標準模式。
+
+- **特徵**:
+  - 回傳 `OUT SYS_REFCURSOR` (而非 `VARCHAR2`)
+  - 回傳欄位名固定為 `RESULT`
+  - **成功代碼**: 統一使用 **`'1'`** (參考 `PMU200`)
+  - **失敗內容**: 發生例外時，回傳 `SQLERRM` 字串
+- **PL/SQL 實作範例**:
+  ```sql
+  PROCEDURE PC_XXX_UPDATE_STATUS (
+      vJson CLOB,
+      vResult OUT SYS_REFCURSOR
+  ) IS
+      vErrorMsg VARCHAR2(4000);
+  BEGIN
+      -- ... 業務邏輯 ...
+      COMMIT;
+      OPEN vResult FOR SELECT '1' AS RESULT FROM DUAL; -- 成功回傳 '1'
+  EXCEPTION
+      WHEN OTHERS THEN
+          ROLLBACK;
+          vErrorMsg := SQLERRM;
+          OPEN vResult FOR SELECT vErrorMsg AS RESULT FROM DUAL;
+  END;
+  ```
+
+### 10.7 複雜結果回傳模式 (Complex Result Patterns)
+
+當操作需要回傳多種業務狀態（不僅是成功/失敗），或在發生 Exception 時需要回傳具體的錯誤訊息給前端顯示時，採用此模式。
+
+- **模式 E: 多重狀態與錯誤訊息模式 (Multi-Status & Error Message Pattern)**
+
+  此模式擴展了模式 C/D，允許回傳多種狀態碼 (如 '2' 代表無資料)，並在錯誤時回傳 `ERROR_MSG` 欄位。
+  - **範例:** `PC_PMI410_IMPORT_PM710`
+  - **PL/SQL 程序定義:**
+    ```sql
+    PROCEDURE PC_PMI410_IMPORT_PM710 (
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR
+    )
+    ```
+  - **PL/SQL 程序內部:**
+
+    ```sql
+    BEGIN
+      -- ... 業務邏輯 ...
+
+      IF vInsertCnt > 0 THEN
+        -- 狀態 '1': 成功匯入
+        OPEN vResult FOR SELECT '1' AS RESULT FROM DUAL;
+      ELSE
+        -- 狀態 '2': 無資料可匯入 (業務提示)
+        OPEN vResult FOR SELECT '2' AS RESULT FROM DUAL;
+      END IF;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        vErrorMsg := SQLERRM;
+        -- 狀態 '-1': 系統錯誤，並回傳錯誤訊息
+        OPEN vResult FOR SELECT '-1' AS RESULT, vErrorMsg AS ERROR_MSG FROM DUAL;
+    END;
+    ```
+
+  - **前端對應寫法 (Service):**
+    使用 `callSpDataSet` (ApiService)。
+
+    ```typescript
+    this._api.callSpDataSet('PK_PM_PMI410.PC_PMI410_IMPORT_PM710', {
+      payload: { ... },
+      refCursorKeys: ['vResult']
+    }).subscribe({
+      next: (res: any) => {
+        const result = res.dsResult?.Table?.[0];
+        const resCode = result?.RESULT;
+
+        switch (resCode) {
+          case '1': // 成功
+            this._notificationService.showSuccess('匯入成功');
+            this.refreshGrid();
+            break;
+          case '2': // 無資料
+            this._notificationService.showWarning('無資料可匯入');
+            break;
+          case '-1': // 系統錯誤
+            this._notificationService.showError(result?.ERROR_MSG || '匯入發生錯誤');
+            break;
+          default:
+            this._notificationService.showError('未知的回傳狀態');
+        }
+      },
+      error: () => this._notificationService.showError('API 呼叫失敗')
+    });
+    ```
+
+### 10.5 輕量級更新模式 (Lightweight Update Patterns)
+
+針對邏輯簡單的狀態切換（如：Grid 內的 Checkbox 勾選、單一旗標更新），且不涉及複雜資料回傳時，採用此模式。此模式比 Cursor 模式更為精簡。
+
+- **模式 F: 簡單狀態字串回傳模式 (Simple Status String Return)**
+
+  使用 `OUT VARCHAR2` 直接回傳成功碼 ('0') 或錯誤訊息。配合前端 `callStoreProcedure` 使用。
+  - **範例:** `PC_APB130_UPDATE_PAYMENT`
+  - **PL/SQL 程序定義:**
+    ```sql
+    PROCEDURE PC_APB130_UPDATE_PAYMENT (
+        vJson CLOB,
+        vResult OUT VARCHAR2  -- 使用 VARCHAR2 回傳單一狀態
+    )
+    ```
+  - **PL/SQL 程序內部:**
+
+    ```sql
+    BEGIN
+      vResult := '1'; -- 最新規範成功代碼為 '1'
+
+      -- ... DML 邏輯 ...
+      UPDATE ...;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        vResult := SQLERRM; -- 發生錯誤時回傳錯誤訊息
+    END;
+    ```
+
+  - **前端對應寫法 (Service):**
+    使用 `callSp` (ApiService)。
+
+    ```typescript
+    this._api.callSp('PK_AP_APB130.PC_APB130_UPDATE_PAYMENT', {
+      payload: { ... }
+    }).subscribe({
+      next: (res: any) => {
+        if (res.resCode === '1') {
+          this._notificationService.showSuccess('更新成功');
+        } else {
+          // resCode 不為 '1' 時，顯示後端回傳的錯誤訊息 (resMsg)
+          this._notificationService.showError(res.resMsg || '更新失敗');
+        }
+      }
+    });
+    ```
+
+## 11. PKG 檔案 Schema 推理實例 (PKG File Schema Inference Example)
+
+為了展示如何從 PKG 檔案推斷出完整的資料表結構，以下提供一個實際的分析案例。
+
+**案例：YY600 表結構推理**
+
+透過對專案中 292 個 PKG 檔案、6,463 次使用的系統性分析，成功推理出 YY600 表的完整結構：
+
+**推理過程：**
+
+1. **Object Type 定義分析** - 發現 `ODP_YY600_DG.sql` 定義了基本欄位
+2. **INSERT 語句分析** - 從多個 PKG 的 INSERT 語句推斷完整欄位列表
+3. **SELECT 語句統計** - 統計欄位使用頻率來確認重要性
+4. **UPDATE 語句驗證** - 確認可更新欄位和約束條件
+
+**推理結果：**
+
+```sql
+CREATE TABLE YY600 (
+    YY600_ID           VARCHAR2(20),      -- 主鍵ID
+    YY600_MODULE       VARCHAR2(10),      -- 模組代碼 ('WO', 'MP', 'SD', 'MD', 'MI'等)
+    YY600_KIND         VARCHAR2(20),      -- 類別代碼 (如 '20190622001')
+    YY600_DESCRIPTION  VARCHAR2(200),     -- 描述說明
+    YY600_CODE         VARCHAR2(100),     -- 代碼值 (1,252次使用)
+    YY600_MEANING1     VARCHAR2(100),     -- 意義欄位1 (1,282次使用 - 最高頻)
+    YY600_MEANING2     VARCHAR2(100),     -- 意義欄位2 (570次使用)
+    YY600_MEANING3     VARCHAR2(100),     -- 意義欄位3 (386次使用)
+    YY600_MEANING4     VARCHAR2(100),     -- 意義欄位4 (267次使用)
+    YY600_MEANING5     VARCHAR2(100),     -- 意義欄位5 (98次使用)
+    YY600_DISABLE      VARCHAR2(1),       -- 停用標記 (492次使用)
+    YY600_SYS_DATE     DATE,              -- 系統日期 (113次使用)
+    YY600_SYS_USER     VARCHAR2(20)       -- 系統使用者 (192次使用)
+);
+```
+
+**業務用途推斷：**
+
+- **通用參數設定表** - 透過 MODULE + KIND 組合進行邏輯分區
+- **彈性設計** - 多達 5 個 MEANING 欄位支援不同業務場景
+- **軟刪除機制** - DISABLE 欄位控制啟用/停用狀態
+- **稽核支援** - SYS_DATE 和 SYS_USER 提供操作記錄
+
+**關鍵洞察：**
+此案例完美展示了在沒有正式 DDL 定義的情況下，如何透過本地搜尋工具進行系統性分析，從大量 PKG 檔案中逆向工程出完整且準確的資料庫 Schema 資訊。
+
+## 12. 如何新增功能 (How to Add a New Feature)
+
+根據已儲存的記憶和本次分析，新增一個完整的頁面功能 (例如 `WOQ999DG`) 需要遵循以下步驟，這也反映了專案的架構：
+
+0.  **版面佈局確認 (Layout Confirmation)**:
+    - **優先執行**: 在撰寫任何程式碼之前，先確認 Grid/Form 的 Layout 佈局 (上下/左右分割)。
+    - **工具**: 使用 `<resize-layout>` 進行規劃。
+    - **範例**: 確認是「上中下」三層式，還是「上層左右分割 + 下層長條」等配置。
+
+1.  **資料庫 (Database)**:
+    - 在 `DLP.SQL/[地區]/DDL/[模組]/` 中新增資料表定義 SQL (PKG)。
+    - **PKG 規範**: 必須是 **單一檔案** (包含 Specification 和 Body)，且命名需與檔案名稱一致 (如 `PK_WO_WOQ999.sql`)。
+    - 在 `DLP.SQL/[地區]/DCL/` 中更新權限腳本。
+
+2.  **後端 (.NET)**:
+    - **資料層**: 在 `DLP.Model.WO` 和 `DLP.Model.WOTypes` 中建立：
+      - `DTO/dg/WOQ999DTO.cs`
+      - `Interface/dg/IWOQ999Repository.cs`
+      - `Repositories/dg/WOQ999Repository.cs`
+      - `Services/dg/WOQ999Service.cs`
+    - **API層**: 在 `DLP.WebAPI.WO` 中建立：
+      - `Controllers/dg/WOQ999Controller.cs`
+
+3.  **前端 (Angular)**:
+    - **建立目錄與檔案**: 新程式應直接位於地區目錄下的獨立資料夾 `[程式名稱]/` (不使用 `pages/`)。可使用以下 Windows CMD 指令，在專案根目錄【逐行執行】來快速建立：
+      ```bash
+      # 建立新頁面 WOQ999DG 的目錄與檔案 (於專案根目錄執行)
+      # 新程式一律使用 views/[模組]/[地區]/[程式名稱]/ 結構
+      set "MODULE_PATH=DLP.Web\DLP.Web.AppPortal\ClientApp\src\app\views\wo\dg"
+      set "PAGE_PATH=%MODULE_PATH%\woq999"
+      mkdir %PAGE_PATH%
+      type nul > %PAGE_PATH%\woq999.component.ts
+      type nul > %PAGE_PATH%\woq999.component.html
+      type nul > %PAGE_PATH%\woq999.component.scss
+      type nul > %MODULE_PATH%\controls\woq999.control.ts
+      type nul > %MODULE_PATH%\services\woq999.service.ts
+      type nul > %MODULE_PATH%\states\woq999.state.ts
+      ```
+    - **檔案內容與位置** (檔案命名應使用小寫，例如：`woq999.component.ts`)：
+      - **頁面檔案** (位於 `views/wo/dg/woq999/` 目錄)：
+        - `woq999.component.ts` (主元件)
+        - `woq999.component.html` (元件模板)
+        - `woq999.component.scss` (元件樣式)
+      - **共享檔案** (位於模組級目錄)：
+        - `controls/woq999.control.ts` (控制項)
+        - `services/woq999.service.ts` (前端服務)
+        - `states/woq999.state.ts` (狀態管理)
+    - **註冊模組**:
+      - 在 `wo-routing.module.ts` 中新增路由。
+      - 在 `wo.module.ts` 中宣告新元件。
+    - **📝 標準檔案清單範例 (參考 PMU020VN)**:
+      ```text
+      DLP.SQL/VN/DCL/grant_PM.sql
+      DLP.SQL/VN/DDL/PM/PK_PM_PMU200.sql
+      DLP.Web/.../src/app/views/pm/pm-routing.module.ts
+      DLP.Web/.../src/app/views/pm/pm.module.ts
+      DLP.Web/.../src/app/views/pm/vn/controls/pmu200-form.control.ts
+      DLP.Web/.../src/app/views/pm/vn/controls/pmu200.control.ts
+      DLP.Web/.../src/app/views/pm/vn/pmu200/pmu200.component.html
+      DLP.Web/.../src/app/views/pm/vn/pmu200/pmu200.component.scss
+      DLP.Web/.../src/app/views/pm/vn/pmu200/pmu200.component.ts
+      DLP.Web/.../src/app/views/pm/vn/services/pmu200.service.ts
+      DLP.Web/.../src/app/views/pm/vn/states/pmu200.state.ts
+      ```
+
+這個流程清晰地展示了從資料庫到後端再到前端的 **全端垂直開發模式**。
+
+## 13. 從零開始寫一個完整 `dlp-grid` 的步驟 (參考 `DPI580DG`)
+
+從 `DPI580DG` 的範例中，我們可以總結出從零開始寫一個完整 `dlp-grid` 的步驟，它遵循了清晰的職責分離原則：
+
+- **1. 定義狀態 (`*.state.ts`)**
+  - **目的**: 管理頁面和網格的狀態數據。
+  - **步驟**: 創建 `State` 類，並在其中初始化 `DlpGridRefs` 實例。
+
+- **2. 定義控制 (`*.control.ts`)**
+  - **目的**: 處理網格的配置和 UI 相關的邏輯 (例如列定義、驗證規則)。
+  - **步驟**: 創建 `Control` 類，並在其中定義返回 `DlpColDef[]` 的方法來配置網格。
+
+- **3. 定義服務 (`*.service.ts`)**
+  - **目的**: 處理業務邏輯和與後端 API 的互動。
+  - **步驟**: 創建 `Service` 類，定義與後端 API 互動的方法，如查詢、更新、刪除等。
+
+- **4. 組件 (`*.component.ts`)**
+  - **目的**: 作為視圖和邏輯的協調者，將 State、Control 和 Service 整合起來。
+  - **步驟**: 注入 State, Control, Service，並在 `ngOnInit` 中進行 gridConfig 的配置。
+
+- **5. 模板 (`*.component.html`)**
+  - **目的**: 顯示網格的 UI。
+  - **步驟**: 使用 `<dlp-grid>` 標籤，並將 `[gridRefs]` 和事件綁定到組件的屬性和方法。
+
+這種 **State-Control-Service-Component** 的模式使得 `dlp-grid` 的實現模組化、可維護且易於擴展。
+
+**重要提醒**：
+
+- 所有頁面布局必須使用 `resize-layout` 系統
+- 切勿自行使用 `<div>`、`<span>` 等 HTML 元件進行排版
+- SCSS 檔案預設保持空白，僅供使用者客製化樣式
+
+## 14. 從零開始寫一個完整 `dlp-form` 的步驟 (參考 `FXR050DG`)
+
+此流程與 `dlp-grid` 類似，同樣遵循 **State-Control-Service-Component** 的模式，核心在於：
+
+1.  **State**: 管理 `DlpFormRefs` 實例。
+2.  **Control**: 定義表單的欄位設定 (`DlpFieldConfigurationsType[]`)。
+3.  **Service**: 處理表單提交等業務邏輯。
+4.  **Component & Template**: 整合所有部分並使用 `<dlp-form>` 標籤。
+
+## 15. 實際開發案例：Form + Grid 整合 (參考 DPI999DG)
+
+本節展示如何整合 `<dlp-form>` 和 `<dlp-grid>` 在同一頁面中,實現「查詢表單 + 結果網格」的常見模式。
+
+**📚 參照範例:**
+
+- Form 實作 → 完全參照 **§ 6.3 FXR050DG**
+- Grid 實作 → 完全參照 **§ 6.2 DPI580DG**
+
+#### 整合要點
+
+**1. State 層整合**
+同時管理兩個 Refs 實例:
+
+```typescript
+export class Dpi999State {
+  public dpi999FormRefs: DlpFormRefs; // Form 狀態
+  public dpi999GridRefs: DlpGridRefs; // Grid 狀態
+
+  public init(): void {
+    this.dpi999FormRefs = new DlpFormRefs();
+    this.dpi999GridRefs = new DlpGridRefs();
+  }
+}
+```
+
+**2. Control 層整合**
+提供兩組配置方法:
+
+- `getDpi999FormControls()`: 定義表單欄位 (參照 FXR050DG 模式)
+- `getDpi999GridColDefs()`: 定義網格欄位 (參照 DPI580DG 模式)
+
+```typescript
+export class Dpi999Control {
+  constructor(private _service: Dpi999Service) {}
+
+  // Form 欄位配置
+  public getDpi999FormControls(): DlpFieldConfigurationsType[] {
+    return [
+      {
+        key: "dateRange",
+        label: "日期區間",
+        type: EFieldType.daterange,
+        width: 300,
+      },
+      { key: "dataType", label: "資料類型", type: EFieldType.select /* ... */ },
+      lineBreak(),
+      {
+        key: "query",
+        type: EFieldType.button,
+        text: "查詢",
+        onClick: () => this._service.onQueryGrid(),
+      },
+      {
+        key: "export",
+        type: EFieldType.button,
+        text: "匯出報表",
+        onClick: () => this._service.onExportReport(),
+      },
+    ];
+  }
+
+  // Grid 欄位配置
+  public getDpi999GridColDefs(): DlpColDef[] {
+    return [
+      {
+        field: "DP580_NO",
+        headerName: "單號",
+        width: 150,
+        sortable: true,
+        editable: true,
+      },
+      { field: "DP580_DEPT", headerName: "部門", width: 120, sortable: true },
+      // ... 其他欄位定義 (完整範例見 § 6.2 DPI580DG)
+    ];
+  }
+}
+```
+
+**3. Service 層整合**
+處理 Form 和 Grid 的業務邏輯:
+
+```typescript
+export class Dpi999Service {
+  // Form 按鈕: 觸發 Grid 查詢
+  onQueryGrid(): void {
+    this._state.dpi999GridRefs.search();
+  }
+
+  // Form 按鈕: 匯出報表 (參照 FXR050DG)
+  onExportReport(): void {
+    const payload = { ...this._state.dpi999FormRefs.formData };
+    this._sharedApi.getReportPost("報表API", payload, "報表名稱");
+  }
+
+  // Grid 查詢: 使用 Form 的資料作為查詢條件 (參照 DPI580DG)
+  getDpi999QueryInfo(): IDlpGridQueryInfo {
+    return {
+      actionOrSpName: "PK_DP_DPI580.PC_DPI580_QUERY_DP580",
+      queryParams: {
+        payload: { ...this._state.dpi999FormRefs.formData }, // 關鍵: Form → Grid
+        refCursorKeys: ["vResult", "vCount"],
+      },
+    };
+  }
+
+  // Grid 資料更新 (參照 DPI580DG)
+  updateDpi999($event: DlpGridSaveEvent): void {
+    this._state.dpi999GridRefs.executeUpsert(
+      "PK_DP_DPI580.PC_DPI580_UPSERT_DP580",
+      {
+        payload: { UpsertData: [...$event.insertData, ...$event.updateData] },
+        refCursorKeys: ["vResult"],
+      },
+    );
+  }
+
+  // Grid 資料刪除 (參照 DPI580DG)
+  deleteDpi999($event: DlpGridDeleteRowEvent): void {
+    this._state.dpi999GridRefs.executeDelete(
+      "PK_DP_DPI580.PC_DPI580_DELETE_DP580",
+      {
+        payload: { DP580_NO: $event.node.data.DP580_NO },
+        refCursorKeys: ["vResult"],
+      },
+    );
+  }
+}
+```
+
+**4. Component 初始化**
+
+```typescript
+export class Dpi999Component implements OnInit {
+  constructor(
+    private _control: Dpi999Control,
+    private _service: Dpi999Service,
+    public state: Dpi999State,
+  ) {}
+
+  ngOnInit(): void {
+    this.state.init();
+
+    // 初始化 Form
+    this.state.dpi999FormRefs.formConfig = {
+      name: "dpi999.state.dpi999FormRefs",
+      fieldConfs: this._control.getDpi999FormControls(),
+    };
+
+    // 初始化 Grid
+    this.state.dpi999GridRefs.gridConfig = {
+      name: "dpi999.state.dpi999GridRefs",
+      apiParams: { moduleNo: "DP", programNo: "DPI999" /* ... */ },
+      columnDefs: this._control.getDpi999GridColDefs(),
+      getQueryInfo: () => this._service.getDpi999QueryInfo(),
+      // ... 其他 Grid 配置 (完整範例見 § 6.2)
+    };
+  }
+
+  // 事件處理
+  public onDpi999GridSave = ($event: DlpGridSaveEvent) => {
+    this._service.updateDpi999($event);
+  };
+
+  public onDpi999GridDelete = ($event: DlpGridDeleteRowEvent) => {
+    this._service.deleteDpi999($event);
+  };
+}
+```
+
+**5. Template 整合**
+
+```html
+<!-- 查詢區塊 -->
+<dlp-form [formRefs]="state.dpi999FormRefs"></dlp-form>
+
+<!-- 結果區塊 -->
+<dlp-grid
+  [gridRefs]="state.dpi999GridRefs"
+  (save)="onDpi999GridSave($event)"
+  (deleteRow)="onDpi999GridDelete($event)"
+>
+</dlp-grid>
+```
+
+#### 關鍵設計模式
+
+1. **資料流向**: Form 表單資料 → Grid 查詢參數
+2. **解耦複用**: Grid 可複用其他程式的後端邏輯 (如 DPI580)
+3. **單一職責**: Service 方法保持功能獨立
+
+#### 檔案結構
+
+```bash
+CLIENTAPP/src/app/views/dp/dg/pages/dpi999/
+├── dpi999.state.ts      # 管理 FormRefs + GridRefs
+├── dpi999.control.ts    # 定義 Form 欄位 + Grid 欄位
+├── dpi999.service.ts    # 處理 Form 事件 + Grid CRUD
+├── dpi999.component.ts  # 初始化整合
+└── dpi999.component.html # 顯示 Form + Grid
+```
+
+> **💡 完整程式碼範例**: 請參照實際專案中的 `DPI999DG` 程式,或根據 § 6.2 和 § 6.3 的模式組合實作。
+
+## 16. 如何新增分頁 (How to Add a New Tab)
+
+在專案中，為頁面新增或修改分頁 (Tab) 功能時，有一個非常通用且標準的模式。此模式遵循關注點分離原則，將設定與實作拆分到不同的檔案中。
+
+- **主要模式**: 透過 `control.ts` 檔案來定義分頁的標籤與結構。
+- **參考範例**: `WOQ020`、`sdi620`。
+
+#### 步驟一: 在 `control.ts` 中定義分頁標籤
+
+在頁面對應的 `control.ts` 檔案中，建立一個方法 (例如 `setTabControls`)，用來定義所有分頁的標籤。這些標籤會以陣列的形式，設定到對應的 `state` 物件中。
+
+```typescript
+// *.control.ts
+setTabControls = (): void => {
+  this._state.tabRefs.tabControls = [
+    { label: "第一個分頁" },
+    { label: "第二個分頁" },
+    // ...更多分頁
+  ];
+};
+```
+
+_注意: 在某些較舊或非標準的實作中 (如 `WOI41A`)，分頁標籤陣列可能會直接定義在 `component.ts` 中。雖然可行，但建議遵循 `control.ts` 的標準模式。_
+
+#### 步驟二: 在 `component.html` 中定義分頁內容
+
+在 `component.html` 範本檔案中，使用 `<ng-template appTabTemplate>` 指令來定義每一個分頁的內容。樣板的順序必須與 `control.ts` 中定義的標籤順序一致。
+
+```html
+<!-- *.component.html -->
+
+<!-- 第一個分頁的內容 -->
+<ng-template appTabTemplate>
+  <dlp-grid [gridRefs]="state.tab1GridRefs"></dlp-grid>
+</ng-template>
+
+<!-- 第二個分頁的內容 -->
+<ng-template appTabTemplate>
+  <dlp-form [formRefs]="state.tab2FormRefs"></dlp-form>
+</ng-template>
+```
+
+#### 步驟三: 在 `state.ts` 中管理分頁狀態
+
+對於每一個新分頁中的元件 (Grid 或 Form)，都需要在對應的 `state.ts` 檔案中新增一個狀態屬性 (例如 `DlpGridRefs` 或 `DlpFormRefs`) 來管理其狀態，並在 `init()` 方法中進行初始化。
+
+```typescript
+// *.state.ts
+export class YourPageState {
+  // ...
+  public tab1GridRefs: DlpGridRefs;
+  public tab2FormRefs: DlpFormRefs;
+
+  public init() {
+    // ...
+    this.tab1GridRefs = new DlpGridRefs();
+    this.tab2FormRefs = new DlpFormRefs();
+  }
+}
+```
+
+#### 步驟四: 在 `component.ts` 中初始化分頁
+
+在主元件的 `ngOnInit` 方法中，呼叫 `control.ts` 的 `setTabControls()` 方法來設定分頁，並初始化每個分頁中元件的設定檔 (`gridConfig` 或 `formConfig`)。
+
+```typescript
+// *.component.ts
+ngOnInit(): void {
+  this.state.init();
+  this._control.setTabControls(); // 設定分頁標籤
+
+  // 初始化第一個分頁的 Grid
+  this.state.tab1GridRefs.gridConfig = {
+    // ... grid config
+  };
+
+  // 初始化第二個分頁的 Form
+  this.state.tab2FormRefs.formConfig = {
+    // ... form config
+  };
+}
+```
+
+#### 步驟五: 載入分頁資料與互動
+
+分頁的資料通常是在特定事件觸發後才載入，例如使用者在主畫面選擇了一筆資料。
+
+- 在 `service.ts` 中建立獲取各分頁資料的方法。
+- 在 `component.ts` 中，透過事件處理函式 (例如 `onGridRowSelected`) 來呼叫 `service` 的方法，載入資料並控制分頁的啟用/禁用狀態。
+
+```typescript
+// *.component.ts
+onMainGridRowSelected = (event) => {
+  if (event.data) {
+    // 觸發載入各分頁的資料
+    this._service.queryTab1Data(event.data.id);
+    this._service.queryTab2Data(event.data.id);
+
+    // 啟用所有分頁
+    this.state.disabledTabs = [];
+  } else {
+    // 禁用特定分頁
+    this.state.disabledTabs = [1, 2];
+  }
+};
+```
+
+遵循以上步驟，即可在專案中以標準化且可維護的方式新增分頁功能。
+
+## 17. 報表功能實作指南
+
+### 17.2 報表參數與名稱確認 (Critical)
+
+- **嚴禁猜測**: 絕對禁止預設報表名稱與程式代碼相同 (如 APR130 -> pr130.rdf)，也禁止猜測參數名稱。
+- **查閱 TXT**: 必須搜尋 TXT 檔案中的 Run_Product、RUN_REPORT_OBJECT 或自定義 Procedure (如 call_report)，找出確切的 Report Name 字串與 Add_parameter 列表。
+- **參數對齊**: Web API 呼叫時的參數 Key 必須與 TXT 中 Add_parameter 的 Key **完全一致** (包含大小寫建議)。 (Report Generation Implementation Guide)
+
+### 17.1 基本原則
+
+- **命名規範**: 報表類程式通常以 `R` 開頭（如 `APR130`, `PMR520`）。
+- **佈局模式**: 通常採用單一 `dlp-form` 作為篩選條件輸入區。
+- **🚨 大標題寫法**: 報表頁面最上方應包含大標題，標準寫法如下：
+  ```typescript
+  {
+    label: '應付憑單檢核表列印', // 報表名稱
+    type: 'label',
+    width: 100,
+    labelFontSize: 20,
+    labelAlign: 'center',
+  },
+  lineBreak(),
+  ```
+- **🚨 離開按鈕規範**: 改寫為 Web 版本時，若原始 FMB/TXT 規格中包含「離開」按鈕，**不需實作**。使用者可透過關閉瀏覽器分頁或點擊導航選單離開。
+
+在專案中實作報表功能時，有一套標準化的模式。報表功能主要透過 `SharedApi.getReportPost()` 來產生 PDF 或直接列印，並使用 `AppLoaderService` 提供載入指示器。
+
+- **主要模式**: Service 層處理報表邏輯，Control 層提供按鈕觸發。
+- **參考範例**: `FXR050DG`、`CLR500VN`。
+
+#### 步驟一: Service 層注入必要服務
+
+在 Service 的 constructor 中注入 `AppLoaderService` 和 `SharedApi`：
+
+```typescript
+// fxr050.service.ts
+import { Injectable } from "@angular/core";
+import { AppLoaderService } from "dlp-shared-components";
+import { SharedApi } from "app/shared/api/shared.api";
+import { DatePipe } from "@angular/common";
+
+@Injectable({
+  providedIn: "root",
+})
+export class Fxr050Service {
+  constructor(
+    private _state: Fxr050State,
+    private _loaderService: AppLoaderService,
+    private _sharedApi: SharedApi,
+    private _datePipe: DatePipe, // 如果需要日期格式轉換
+  ) {}
+}
+```
+
+**重要服務說明**：
+
+- `AppLoaderService`: 顯示/關閉載入指示器
+- `SharedApi`: 提供報表 API (`getReportPost`, `directPrint`)
+- `DatePipe`: 格式化日期參數（選用）
+
+#### 步驟二: 實作 getReport 方法
+
+建立報表方法，包含參數驗證、載入指示器、報表呼叫：
+
+```typescript
+// fxr050.service.ts
+public getReport = (): void => {
+  // 1. 從 Form 取得查詢參數
+  const { SD130_COMPANY_NO, FX010_SORT, LS_FLAG, LS_MARK, GET_YYYYMM, PRINT_TYPE } =
+    this._state.fxr050FormRefs.formData;
+
+  // 2. 開啟載入指示器
+  this._loaderService.open();
+
+  // 3. 組裝報表參數
+  const payload = {
+    ReportName: 'FXR050',                              // 報表名稱（對應後端報表定義）
+    ResultType: PRINT_TYPE === 'S' ? 'pdf' : 'URL',    // 預覽(pdf) 或 列印(URL)
+    ReportParameters: {                                 // 報表參數
+      COMPANY: SD130_COMPANY_NO,
+      SORT: FX010_SORT,
+      FLAG: LS_FLAG,
+      S_DATE: this._datePipe.transform(GET_YYYYMM.start, 'yyyy/MM/dd'),
+      E_DATE: this._datePipe.transform(GET_YYYYMM.end, 'yyyy/MM/dd'),
+      MARK: LS_MARK,
+      DESFORMAT: 'PDF',                                 // 固定參數
+      DESTYPE: 'cache',                                 // 固定參數
+      REPORT: 'fxr050',                                 // 報表檔案名稱（小寫）
+    },
+  };
+
+  // 4. 呼叫報表 API
+  this._sharedApi.getReportPost(payload).subscribe({
+    next: (response) => {
+      this._loaderService.close();
+
+      // 5. 根據列印方式處理回應
+      if (PRINT_TYPE === 'S') {
+        // 螢幕預覽：開啟 PDF 新視窗
+        const blob: any = new Blob([response], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+      } else {
+        // 直接列印：呼叫 directPrint
+        this._sharedApi.directPrint(response.ResultUrl);
+      }
+    },
+    error: () => {
+      // 6. 錯誤處理
+      this._loaderService.close();
+      this._notificationService.showWarning('報表產生失敗，請通知電腦室人員！');
+    },
+  });
+};
+```
+
+#### 步驟三: Control 層新增報表按鈕
+
+在 Form 控制項中新增「執行」或「列印」按鈕：
+
+```typescript
+// fxr050.control.ts
+public getFxr050FormControls = (): DlpFieldConfigurationsType[] => {
+  return [
+    // ... 其他查詢條件欄位 ...
+
+    // 列印方式選擇（選用）
+    {
+      key: 'PRINT_TYPE',
+      label: '請選擇列印方式：',
+      type: 'radio',
+      defaultValue: 'S',
+      options$: of([
+        { value: 'S', label: 'SCREEN' },   // 螢幕預覽
+        { value: 'P', label: 'PRINTER' },  // 直接列印
+      ]),
+    },
+    lineBreak(),
+
+    // 執行按鈕
+    {
+      text: '執行',
+      type: 'button',
+      icon: 'play_arrow',
+      width: 10,
+      onClick: () => {
+        this._service.getReport();  // 觸發報表產生
+      },
+    },
+  ];
+};
+```
+
+#### 步驟四: 參數驗證（選用但推薦）
+
+針對必要參數進行驗證，避免無效的報表請求：
+
+```typescript
+public getReport = (): void => {
+  const formData = this._state.fxr050FormRefs.formData;
+
+  // 驗證必要參數
+  if (!formData?.SD130_COMPANY_NO) {
+    this._notificationService.showWarning('請先選擇公司別！');
+    return;
+  }
+
+  if (!formData?.GET_YYYYMM?.start || !formData?.GET_YYYYMM?.end) {
+    this._notificationService.showWarning('請選擇取得日期範圍！');
+    return;
+  }
+
+  // ... 繼續報表邏輯 ...
+};
+```
+
+#### 報表功能關鍵要點
+
+##### 1. **ReportParameters 參數對照**
+
+ReportParameters 的欄位名稱必須與**後端報表定義**一致，不一定與前端 Form 欄位相同：
+
+```typescript
+ReportParameters: {
+  // ❌ 錯誤：直接使用前端欄位名稱
+  CL600_PROJECT_NO: projectNo,
+
+  // ✅ 正確：使用後端報表定義的參數名稱
+  DOCUMENT_NO: projectNo,      // 後端可能定義為 DOCUMENT_NO
+  PROJECT_NO: projectNo,        // 或者定義為 PROJECT_NO
+}
+```
+
+**檢查方法**：
+
+- 查閱後端報表定義檔（.rdf 或 SSRS .rdl）
+- 或參考 FMB 的 `call_report` 參數傳遞
+
+##### 2. **日期格式轉換**
+
+報表參數通常需要特定的日期格式：
+
+```typescript
+import { DatePipe } from '@angular/common';
+
+// Constructor 注入
+constructor(private _datePipe: DatePipe) {}
+
+// 使用 DatePipe 轉換
+ReportParameters: {
+  S_DATE: this._datePipe.transform(formData.GET_YYYYMM.start, 'yyyy/MM/dd'),
+  E_DATE: this._datePipe.transform(formData.GET_YYYYMM.end, 'yyyy/MM/dd'),
+}
+```
+
+**常見日期格式**：
+
+- `'yyyy/MM/dd'`: 2024/01/15
+- `'yyyyMMdd'`: 20240115
+- `'yyyy-MM-dd'`: 2024-01-15
+
+##### 3. **ResultType 選擇**
+
+```typescript
+ResultType: PRINT_TYPE === "S" ? "pdf" : "URL";
+```
+
+- **'pdf'**: 回傳 PDF 二進位資料，用於螢幕預覽
+  - 需搭配 `Blob` + `URL.createObjectURL()` + `window.open()`
+
+- **'URL'**: 回傳報表 URL，用於直接列印
+  - 需搭配 `SharedApi.directPrint(response.ResultUrl)`
+
+##### 4. **固定參數說明**
+
+```typescript
+DESFORMAT: 'PDF',      // 輸出格式固定為 PDF
+DESTYPE: 'cache',      // 快取類型固定為 cache
+REPORT: 'fxr050',      // 報表檔案名稱（通常為小寫程式代號）
+```
+
+這些參數通常是固定值，源自舊系統 Oracle Reports 的參數設計。
+
+##### 5. **螢幕預覽實作模式**
+
+```typescript
+if (PRINT_TYPE === "S") {
+  // 步驟 1: 建立 Blob 物件
+  const blob: any = new Blob([response], { type: "application/pdf" });
+
+  // 步驟 2: 產生臨時 URL
+  const url = URL.createObjectURL(blob);
+
+  // 步驟 3: 開啟新視窗顯示 PDF
+  window.open(url);
+}
+```
+
+**注意事項**：
+
+- `Blob` 的 type 必須是 `'application/pdf'`
+- `URL.createObjectURL()` 會產生臨時 URL（如 `blob:http://...`）
+- 使用完畢後可用 `URL.revokeObjectURL(url)` 釋放記憶體（選用）
+
+##### 6. **直接列印實作模式**
+
+```typescript
+if (PRINT_TYPE === "P") {
+  this._sharedApi.directPrint(response.ResultUrl);
+}
+```
+
+`directPrint` 方法會開啟隱藏的 iframe 並觸發瀏覽器列印對話框。
+
+#### 完整範例：CLR500 簡化版報表
+
+```typescript
+// clr500.service.ts
+import { Injectable } from "@angular/core";
+import { AppLoaderService } from "dlp-shared-components";
+import { SharedApi } from "app/shared/api/shared.api";
+import { NotificationService } from "dlp-shared-services";
+
+@Injectable({
+  providedIn: "root",
+})
+export class Clr500Service {
+  constructor(
+    private _state: Clr500State,
+    private _notificationService: NotificationService,
+    private _loaderService: AppLoaderService,
+    private _sharedApi: SharedApi,
+  ) {}
+
+  public getReport = (): void => {
+    const searchData = this._state.searchFormRefs.formData;
+    const cl600Data = this._state.cl600FormRefs.formData;
+
+    // 1. 參數驗證
+    if (!searchData?.COMPANY_NO) {
+      this._notificationService.showWarning("請先選擇公司別！");
+      return;
+    }
+
+    if (!cl600Data?.CL600_PROJECT_NO) {
+      this._notificationService.showWarning("請先查詢專案資料！");
+      return;
+    }
+
+    // 2. 顯示載入指示器
+    this._loaderService.open();
+
+    // 3. 組裝報表參數
+    const payload = {
+      ReportName: "CLR500",
+      ResultType: "pdf", // 固定為 PDF 預覽
+      ReportParameters: {
+        DOCUMENT_NO: cl600Data.CL600_PROJECT_NO,
+        DESFORMAT: "PDF",
+        DESTYPE: "cache",
+        REPORT: "clr500",
+      },
+    };
+
+    // 4. 呼叫報表 API
+    this._sharedApi.getReportPost(payload).subscribe({
+      next: (response) => {
+        this._loaderService.close();
+        const blob: any = new Blob([response], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+      },
+      error: () => {
+        this._loaderService.close();
+        this._notificationService.showWarning(
+          "報表產生失敗，請通知電腦室人員！",
+        );
+      },
+    });
+  };
+}
+```
+
+```typescript
+// clr500.control.ts
+{
+  text: '列印',
+  type: 'button',
+  width: '100px',
+  onClick: () => {
+    this._service.getReport();
+  },
+},
+```
+
+#### 報表開發檢查清單
+
+##### Service 層檢查
+
+```bash
+✅ 注入 AppLoaderService 和 SharedApi
+✅ 實作 getReport() 方法
+✅ 加入參數驗證邏輯
+✅ 使用 loaderService.open() 和 close()
+✅ ReportParameters 欄位名稱正確
+✅ ResultType 根據需求選擇 (pdf/URL)
+✅ 加入 error 錯誤處理
+```
+
+##### Control 層檢查
+
+```bash
+✅ 新增報表觸發按鈕
+✅ onClick 呼叫 Service 的 getReport()
+✅ 如需選擇列印方式，加入 PRINT_TYPE 選項
+```
+
+##### 常見錯誤與修正
+
+**錯誤 1: 缺少必要服務注入**
+
+```typescript
+// ❌ 錯誤：未注入 AppLoaderService
+constructor(private _state: State) {}
+
+// ✅ 正確：注入完整服務
+constructor(
+  private _state: State,
+  private _loaderService: AppLoaderService,
+  private _sharedApi: SharedApi,
+) {}
+```
+
+**錯誤 2: ReportParameters 參數名稱錯誤**
+
+```typescript
+// ❌ 錯誤：使用前端 Form 欄位名稱
+ReportParameters: {
+  CL600_PROJECT_NO: projectNo,  // 後端可能不認識此參數
+}
+
+// ✅ 正確：使用後端報表定義的參數名稱
+ReportParameters: {
+  DOCUMENT_NO: projectNo,       // 符合後端報表定義
+}
+```
+
+**錯誤 3: 忘記關閉 loaderService**
+
+```typescript
+// ❌ 錯誤：error 時忘記關閉
+error: () => {
+  this._notificationService.showWarning("失敗！");
+  // 忘記 close，載入指示器會一直顯示
+};
+
+// ✅ 正確：error 時也要關閉
+error: () => {
+  this._loaderService.close(); // ✅ 記得關閉
+  this._notificationService.showWarning("失敗！");
+};
+```
+
+**錯誤 4: Blob type 錯誤**
+
+```typescript
+// ❌ 錯誤：type 錯誤導致無法開啟
+const blob = new Blob([response], { type: "text/plain" });
+
+// ✅ 正確：type 必須是 application/pdf
+const blob: any = new Blob([response], { type: "application/pdf" });
+```
+
+遵循以上步驟，即可在專案中以標準化且可維護的方式實作報表功能。
+
+## 18. 跨程式關聯與進階模式 (Cross-Program Relations & Advanced Patterns)
+
+除了上述通用的架構和開發模式外，在長期維護和複雜的業務需求下，專案中也演化出了一些更進階的設計模式和需要特別注意的程式關聯。本章節旨在記錄這些「隱性知識」，以利於未來的開發與分析。
+
+### 7.1. 共享狀態資料表 (Shared State Tables)
+
+- **模式描述**: 兩個或多個功能上看似獨立的程式，實際上是透過讀取或寫入同一個「狀態資料表」來達成間接的耦合與互動。修改這個狀態資料表，會直接影響到另一個程式的行為和資料呈現。
+- **實際案例**: `WOC620DG` 的還原功能與 `SDI17EDG` 的查詢功能。
+  - `SDI17EDG` 的「三年未下單」過濾器，其判斷標準是型體是否存在於 `SD710` 這張歷史備份表中。
+  - `WOC620DG` 的「還原」功能，其核心操作之一就是將資料從 `SD710` 備份表中還原回正式表，然後**刪除** `SD710` 中的對應記錄。
+- **結論**: 在 `WOC620DG` 中執行還原，會直接改變 `SDI17EDG` 的資料篩選結果。這是在進行相關功能修改時，需要特別留意的跨程式影響。
+
+### 7.2. 功能實現的多樣性 (Diversity of Feature Implementation)
+
+- **模式描述**: 同樣或類似的業務需求，在不同的程式或模組中，可能存在完全不同的技術實現路徑。開發者不能假設相似的功能會有相同的底層邏輯。
+- **實際案例**: 「三年」型體的過濾功能。
+  - `SDI17EDG` 的實現方式，是檢查型體是否存在於 `SD710` 備份表中。
+  - `WOI390DG` 的實現方式，則是檢查 `WOC20` 主表上的一個旗標欄位 (`WOC20_STYLE_TYPE = 'T'`)。
+- **結論**: 這兩個功能雖然業務目標相似，但資料來源和判斷邏輯完全獨立，互不影響。在修改或參考既有功能時，必須追蹤其實際的程式碼，不能僅從功能表現上推斷其內部實作。
+
+### 7.3. 程序化報表生成模式 (Procedural Report Generation Pattern)
+
+- **模式描述**: 對於資料來源眾多、計算邏輯極度複雜的報表，系統不採用單一的 `SELECT` 查詢，而是透過一系列的資料庫程序化步驟來生成結果。
+- **實際案例**: `WOQ450DG` 的查詢邏輯。
+  - **步驟 1 (清空)**: `DELETE FROM WO451 WHERE WO451_SYS_USER = USER`，先清空目前使用者的臨時暫存結果。
+  - **步驟 2 (計算與插入)**: 呼叫一個核心程序 (例如 `INSERT_WO451`)，該程序內部會執行多個複雜的 SQL 查詢，從 `WO063`、`WO450`、`XX161@VGDB` 等多個來源抓取資料，進行彙總計算後，將結果 `INSERT` 到 `WO451` 臨時表中。
+  - **步驟 3 (查詢)**: 最後，前端的 Grid 再執行一個簡單的 `SELECT * FROM WO451`，從已準備好的臨時表中讀取最終結果。
+- **結論**: 這種模式將複雜的計算邏輯封裝在資料庫程序中，讓前端的呼叫相對簡潔。在分析這類報表時，重點是追蹤其「準備資料」的核心程序，而非最後的 `SELECT` 語句。
+
+### 7.4. 預設與覆蓋邏輯模式 (Default and Override Logic Pattern)
+
+- **模式描述**: 在一個程序中，先執行一個通用的、基礎的計算來獲得一個預設值，然後再根據傳入的特定參數，用更精確、更特殊的計算邏輯去「覆蓋」這個預設值。
+- **實際案例**: `PK_WO_WOQ450` 中的 `INSERT_WO451` 程序。
+  - **預設邏輯**: 程序在處理每一個工廠時，都會先從 `WO450` 表中計算出一個通用的「本月已生產」數量。
+  - **覆蓋邏輯**: 接著，程序會用 `IF/ELSIF` 判斷客戶 (`P_CUST`) 和廠區 (`V_FAC_NO`)。如果符合特定條件 (例如客戶為 `SKCS` 且廠區為 `VG1`)，它就會執行一段完全不同的 SQL (從越南資料庫查詢)，並用這個新結果去覆蓋掉先前計算出的通用值。
+- **結論**: 這種模式讓程式在保有通用性的同時，也具備了處理複雜特例的彈性。在分析時，需要完整地檢視所有的 `IF/ELSIF` 分支，以了解特定參數組合下的完整計算路徑。
+
+### 7.5. 包裝程序與核心程序模式 (Wrapper and Core Procedure Pattern)
+
+- **模式描述**: 專案中存在一種「包裝 (Wrapper)」程序的設計。一個特定功能 (例如 `WOR195`) 的程序，其本身不包含複雜的業務邏輯，而是負責接收前端參數、進行簡單處理後，再去呼叫一個**跨模組的、共用的核心程序** (例如 `WO_INSERT_WO960`) 來完成真正的運算。
+- **實際案例**: `WOR195DG` 的資料準備步驟。
+  - 前端呼叫的 `PRO_INSERT_WOR195_WO960` 程序，其主要作用是作為一個包裝。
+  - 它內部會再去呼叫一個核心程序 (目前在專案外部) `WO_INSERT_WO960`，後者才是真正從原始資料表讀取數據並寫入臨時表的地方。
+- **結論**: 這種模式有利於程式碼的複用。在分析時，如果發現一個程序的邏輯異常簡單，或只是單純轉發呼叫，就需要意識到它可能只是一個「包裝」，其核心邏輯需要去追蹤它所呼叫的下一個程序。
+
+### 7.6. Excel 檔案處理模式 (Excel File Handling Patterns)
+
+專案中主要使用 `ClosedXML` 和 `NPOI` 這兩個函式庫來處理 Excel 檔案的匯入與匯出。兩者都被用於處理複雜的報表，其主要區別在於**設計模式**和**核心使用場景**。
+
+#### 模式一: `ClosedXML` 用於高度客製化匯出
+
+`ClosedXML` 在專案中被用來產生版面與邏輯極度複雜的報表。它能夠在執行期間對 Excel 物件進行深度的操作，例如動態插入行列、重新排序、以及大量使用公式。
+
+- **適用場景**:
+  - **僅限匯出**。
+  - 報表版面需要根據資料內容動態生成，而非基於固定範本。
+  - 報表中包含大量 Excel 公式 (`.FormulaA1`)。
+  - 需要在資料填入後，再對工作表進行二次加工 (如插入、排序、修改)。
+
+- **實作位置**: **Controller 層**。
+
+- **核心流程 (參考 `WOR095DG`)**:
+  1.  **Controller** 的 `Action` 接收前端請求。
+  2.  呼叫 `Service` 層取得 `DataTable` 格式的原始資料。
+  3.  在 `Controller` 中，直接使用 `ClosedXML` 的 API (`XLWorkbook`, `IXLWorksheet`) 進行一系列複雜操作：
+      - 遍歷 `DataTable`，但並非直接填入，而是根據業務邏輯動態建立報表區塊。
+      - 大量使用 `.FormulaA1` 屬性來設定儲存格的計算公式。
+      - 呼叫私有輔助方法，對已填入資料的 `IXLWorksheet` 物件進行二次加工，例如插入新的統計行、根據條件重新排序區塊等。
+  4.  將最終完成的工作簿存入 `MemoryStream`，並作為 `FileResult` 回傳。
+  5.  **架構點評**: 此模式將複雜的報表生成邏輯全部集中在 Controller 中，雖然功能強大，但也使得 Controller 的職責過於繁重，不利於維護與測試。
+
+#### 模式二: `NPOI` 用於標準化匯入與匯出
+
+`NPOI` 是專案中處理 Excel 的另一種主流方式，其設計模式更符合職責分離原則，且同時支援匯入與匯出，並能處理 `.xls` 舊格式。
+
+- **適用場景**:
+  - **匯出**: 產生版面相對固定，但可能包含複雜資料來源與樣式的報表。
+  - **匯入**: 從使用者上傳的 Excel 檔案中讀取資料，並進行後續處理。
+
+- **實作位置**: **Repository 層**。
+
+- **匯出流程 (NPOI Export)**:
+  1.  **前端**: 呼叫後端 `Controller` 的 `ExportExcel` Action。
+  2.  **Controller**: 接收請求，並直接呼叫 `Service` 層的對應方法。
+  3.  **Service**: 呼叫 `Repository` 層的匯出方法。
+  4.  **Repository**:
+      - 注入一個自訂的 `NPOIExcel` 封裝類別。
+      - 查詢資料庫取得資料。
+      - 使用 `_npoi` 物件的方法 (`InitializeWorkbook`, `SetRangeValue`, `SetCellStyle` 等) 來建立工作簿、填寫資料、設定複雜的樣式與格式。
+      - **將處理完畢的 `_npoi` 物件賦值給傳入的 DTO 物件** (e.g., `dto.npoi = _npoi;`)。
+  5.  **回傳**: `Repository` -> `Service` -> `Controller` 逐層回傳修改後的 DTO。
+  6.  **Controller**: 從 Service 回傳的 DTO 中取得 `npoi` 物件，呼叫其 `GetExcelStream()` 方法取得 `MemoryStream`，最後回傳 `FileResult`。
+  7.  **架構點評**: 此模式將 Excel 操作的核心邏輯封裝在 Repository，並透過一個 `NPOIExcel` 輔助類別來標準化操作，架構上比 `ClosedXML` 模式更清晰。
+
+- **匯入流程 (NPOI Import)**:
+  1.  **前端**: 使用者上傳檔案，發送一個 `multipart/form-data` 請求到後端 `Controller`。
+  2.  **Controller**:
+      - 從 `Request.Form.Files` 中取得檔案 (`IFormFile`)。
+      - 將檔案串流 (`file.OpenReadStream()`) 複製到一個 `MemoryStream`。
+      - 將 `MemoryStream` 和其他表單欄位一起存入一個 DTO 物件。
+      - 呼叫 `Service` 層的匯入方法。
+  3.  **Service**: 呼叫 `Repository` 層的匯入方法。
+  4.  **Repository**:
+      - 直接使用 `NPOI` 的原生 API (`HSSFWorkbook`, `XSSFWorkbook`, `ISheet`) 來讀取 DTO 中的檔案串流。
+      - 逐行遍歷 Excel 工作表，讀取儲存格資料。
+      - 將讀取的資料轉換為一個 DTO 物件的列表 (`List<DTO>`)。
+      - **將 DTO 列表序列化為 JSON 字串**。
+      - **呼叫資料庫預存程序，將整個 JSON 字串作為 `CLOB` 參數傳入**，以進行高效的批次資料庫操作。
+  5.  **回傳**: 回傳處理結果給前端。
+
+#### 模式三: NPOI 讀取、豐富化、再回寫模式 (Read, Enrich, Rewrite)
+
+此模式是 `NPOI` 應用的延伸，結合了匯入與匯出，形成一個「讀取、豐富化、再回寫」的完整閉環。它非常適合需要使用者提供一份資料，由系統處理後，再回饋一份更完整報告的業務場景。此模式的核心是將前端的檔案上傳功能，作為後端複雜資料處理和報表生成的觸發器。
+
+- **適用場景**:
+  - 使用者上傳一份包含一組業務關鍵字 (例如訂單號碼、料號、客戶ID等) 的 Excel 檔案。
+  - 系統讀取檔案後，根據這些關鍵字到資料庫中查詢最新的狀態或更詳細的資料。
+  - 系統將使用者上傳的原始資料與從資料庫中查到的新資料進行合併、計算或處理。
+  - 最終產生一份全新的、內容更豐富的 Excel 報表，回傳給使用者下載。
+
+- **實作位置**: 遵循職責分離原則，核心的資料處理與 Excel 生成邏輯被封裝在 **Repository 層**。
+
+- **核心流程**:
+  1.  **前端**:
+      - 元件的 `control.ts` 中定義一個按鈕，其 `onClick` 事件觸發 `service.ts` 中的處理函式。
+      - `service.ts` 使用 `XlsxService` 或類似服務讓使用者選取檔案，並將檔案內容解析為 JSON。
+      - `service.ts` 呼叫後端 API，將解析後的資料作為 payload 送出，並設定 HTTP 回應類型為 `blob`，準備接收檔案。
+  2.  **後端 (Controller & Service)**:
+      - `Controller` 接收請求，建立對應的 DTO，並呼叫 `Service`。
+      - `Service` 作為傳遞層，再呼叫 `Repository` 的對應方法。
+  3.  **後端 (Repository)**:
+      - **讀取**: 從傳入的 DTO 中取得上傳的資料列表。
+      - **查詢**: 提取資料中的業務關鍵字，呼叫資料庫預存程序，查詢回最新的詳細資料。
+      - **處理**: 使用 `NPOI` 建立一個全新的 Excel 工作簿。遍歷原始上傳的資料，結合從資料庫查回的最新資料，套用業務規則與條件式格式化。
+      - **回寫**: 將合併處理後的資料寫入新的工作簿中。
+  4.  **回傳**:
+      - `Repository` 將產生好的 `npoi` 物件 (一個封裝 `NPOI` 工作簿的輔助類別實例) 附加到 DTO 中，然後逐層回傳至 `Controller`。
+      - `Controller` 從 DTO 中取得 `npoi` 物件，呼叫其 `GetExcelStream()` 方法取得檔案串流，並作為 `FileResult` 回傳給前端。
+  5.  **前端**:
+      - `service.ts` 在 API 的 `subscribe` 回呼中，檢查回傳的 `blob`。
+      - 若成功，則使用 `PubFunctionService` 或類似服務的 `saveFile` 方法，觸發瀏覽器下載。
+      - 若失敗 (後端回傳 JSON 格式的錯誤訊息)，則將錯誤訊息顯示在介面上。
+
+- **架構點評**: 此模式完美展示了如何將前端互動、後端處理與資料庫查詢結合，提供一個強大的資料處理功能。它將複雜的業務邏輯 (查詢、合併、格式化) 全部封裝在 `Repository` 中，保持了 `Controller` 和 `Service` 的簡潔，是處理複雜 Excel 互動的絕佳實踐。
+
+- **具體案例參考**: `WOU479DG` 是此模式的一個典型實作。其核心邏輯位於 `WO479Repository.cs`，並由預存程序 `PK_WO_WOU479.PC_WOU479_QUERY_WO810` 提供資料庫支援。
+
+### 7.7. 預存程序中的複雜業務交易模式 (Complex Business Transaction Patterns in Stored Procedures)
+
+除了前端與後端的互動模式，我們也發現專案在資料庫層面，存在著一個處理核心業務邏輯的關鍵模式。一個看似簡單的前端操作，其背後可能對應著一個極度複雜且嚴謹的資料庫交易。
+
+- **模式描述**: 將一個核心業務行為 (例如：確認、審核、結算)，封裝在一個主要的預存程序 (Stored Procedure) 中。這個主程序作為一個**交易的起點與管理者**，負責依序呼叫多個**子程序**，每個子程序完成一項特定的任務，最終確保整個業務流程的**原子性 (All or Nothing)**。
+
+- **核心流程 (參考 `PK_WO_WOC035D.PRO_CONFIRM_WOC035D_WO8G0`)**:
+  1.  **狀態驗證與鎖定**: 在交易開始時，立刻鎖定 (`FOR UPDATE NOWAIT`) 主要的業務單據，並檢查其狀態是否合法，防止資料競爭與不合法的操作。
+  2.  **產生交易序號**: 呼叫一個共用函數 (例如 `WO_GET_REPORT_INDEX_NO`)，產生一個此次交易的唯一序號 (`INDEX`)。這個序號將作為後續所有新增資料的關聯主鍵，方便追蹤。
+  3.  **循序呼叫子程序**:
+      - **建立業務資料**: 呼叫不同的子程序，分別在多個不同的資料表中寫入詳細的業務資料 (例如 `WO_Insert_WO530` 寫入預算表，`WO_Insert_WO540` 寫入明細表)。
+      - **更新狀態**: 呼叫 `CFM_Lot_Data` 等程序，將剛剛寫入的資料更新為「已確認」狀態，並寫入當前使用者與時間。
+      - **記錄稽核軌跡**: 呼叫專門的 `Reg_Lot_Data` 程序，在日誌表 (例如 `WO535`) 中新增一筆紀錄，保存此次操作的人、事、時、地、物等關鍵資訊，以供未來稽核。
+      - **觸發通知**: 呼叫 `Notify_*_Users` 等程序，查詢通知名單，並發送通知給所有下游的相關人員。
+  4.  **交易管理與錯誤回饋**:
+      - 整個主程序被一個 `EXCEPTION` 區塊包圍。
+      - 任何一個子程序執行失敗，都會拋出一個特定的例外。
+      - `EXCEPTION` 區塊會捕捉這個例外，執行 `ROLLBACK` 來撤銷此次交易中的所有變更，並將一個預先定義好的**錯誤碼** (例如 `'2'`、`'3'`、`'9'`...) 透過 `OUT` 參數回傳。
+      - 只有所有子程序都成功執行，才會在程序的最後執行 `COMMIT`。
+      - 前端可根據回傳的錯誤碼，向使用者顯示精確的錯誤原因。
+
+- **結論**: 這是典型的將**複雜商業邏輯下沉到資料庫層**的做法。優點是能確保資料的**絕對一致性與完整性**，且效能通常較高。缺點是業務邏輯與資料庫高度耦合，且 PL/SQL 的調試與維護比 C# 更為複雜。在分析這類功能時，**絕對不能只看 C# 層的程式碼**，必須深入追蹤到最終的 PL/SQL Package，才能理解其完整的商業規則。
+
+### 7.8. 稽核日誌的查詢模式 (Querying Pattern for Audit Logs)
+
+專案中存在一個針對稽核日誌 (Audit Log) 的通用查詢模式，在進行資料分析或開發報表時應遵循此模式，以確保數據的正確性。
+
+- **模式描述**: 系統中存在專門用於記錄操作歷史的日誌表 (Log Table)，例如 `WO535` 用於記錄「指令表確認」的歷史。然而，這些日誌表通常只記錄事件的關鍵索引與部分資料，不一定包含事件發生的所有上下文資訊 (例如，精確到秒的時間戳、當時的操作人員、或相關的業務單據抬頭資訊)。
+
+- **查詢建議**: 當需要對這些日誌進行統計或分析時，**不應只查詢日誌表本身**。查詢時應遵循以下步驟：
+  1.  理解該業務操作的完整流程。
+  2.  找出與該日誌相關聯的**主要業務資料表** (例如，`WO535` 需與 `WO530` 關聯)。
+  3.  使用交易序號或業務單號作為**關聯鍵 (`JOIN ON`)**。
+  4.  從主業務表中取得準確的**時間戳**、**操作人員**或其他必要的分析維度，來進行時間區間的篩選 (`WHERE`) 或分組 (`GROUP BY`)。
+
+- **結論**: 直接查詢日誌表可能會導致數據分析結果不準確 (例如，用錯日期欄位導致統計區間錯誤)。正確的模式是將**日誌表作為起點，去關聯主要的業務資料表**，以還原事件發生當下的完整上下文，確保數據分析的正確性。
+
+### 7.9. 數據驗證優先於註解 (Data Validation Over Comments)
+
+- **模式描述**: 在分析或修改既有程式碼時，尤其是在處理資料庫查詢時，絕對不能完全信任程式碼中的註解。註解可能因為時間久遠或未及時更新，而與實際的資料內容產生脫節。
+- **實際案例**: 例如，在處理 `YY600` 手動補正資料表時，曾發現一個案例：其 SQL 查詢中的欄位註解指出 `YY600_MEANING2` 是「客戶簡稱」，`YY600_MEANING3` 是「調整數量」。然而，在檢視實際返回的資料後，確認了真實的對應關係是相反的：
+  - `YY600_MEANING2` 存的是**數量**。
+  - `YY600_MEANING3` 存的是**客戶簡稱**。
+- **結論**: 當註解與實際資料行為產生衝突時，應永遠以**實際資料的內容**為準。在分析一個不熟悉的查詢時，先執行它並觀察返回的結果，是驗證其真實邏輯的必要步驟。
+
+---
+
+## 19. 問題診斷與資料流追蹤方法論 (Problem Diagnosis & Data Flow Tracking Methodology)
+
+本章節基於實際問題分析經驗，提供系統性的問題診斷方法論，幫助快速定位和解決常見的業務邏輯問題。
+
+### 8.1. 標準問題分析流程 (Standard Problem Analysis Process)
+
+當遇到「為什麼某個操作後資料沒有出現在預期位置」的問題時，應遵循以下系統性分析流程：
+
+#### 操作理解階段 (Operation Understanding Phase)
+
+- **前端追蹤 (Frontend Tracking)**: 分析操作的前端程式邏輯（Component → Service → API 呼叫）
+- **後端追蹤 (Backend Tracking)**: 追蹤後端處理流程（Controller → Service → Repository → SQL Package）
+- **資料庫確認 (Database Confirmation)**: 確認資料庫操作的實際執行內容
+
+#### 目標分析階段 (Target Analysis Phase)
+
+- **查詢邏輯 (Query Logic)**: 分析目標顯示位置的查詢條件
+- **業務規則 (Business Rules)**: 理解篩選邏輯和業務規則
+- **必要條件 (Required Conditions)**: 確認資料出現的必要條件
+
+#### 條件逐項驗證 (Condition Verification)
+
+- **SQL 驗證 (SQL Validation)**: 使用 SQL 逐項檢查每個 WHERE 條件
+- **問題定位 (Problem Identification)**: 找出不符合的具體條件
+- **根因分析 (Root Cause Analysis)**: 確認是業務邏輯正常還是系統問題
+
+### 8.2. 資料關聯問題的診斷技巧 (Data Relationship Diagnosis Techniques)
+
+#### LEFT JOIN 診斷法
+
+當 JOIN 查詢查不到資料時，將 INNER JOIN 改為 LEFT JOIN 來診斷缺失的關聯：
+
+```sql
+-- 診斷缺失的關聯資料
+SELECT
+    main_table.*,
+    CASE WHEN related_table.key IS NULL THEN '缺少關聯資料' ELSE '關聯正常' END AS 診斷結果
+FROM main_table
+LEFT JOIN related_table ON main_table.key = related_table.key
+WHERE main_table.id = 'target_id';
+```
+
+#### 逐項條件檢查法
+
+將複雜查詢拆解為多個簡單檢查：
+
+```sql
+-- 將複雜查詢拆解為多個簡單檢查
+SELECT '基本資料' AS 檢查項目,
+       CASE WHEN COUNT(*) > 0 THEN '存在' ELSE '不存在' END AS 結果
+FROM table1 WHERE condition1
+UNION ALL
+SELECT '關聯資料A',
+       CASE WHEN COUNT(*) > 0 THEN '存在' ELSE '不存在' END
+FROM table2 WHERE condition2
+UNION ALL
+SELECT '子查詢條件',
+       CASE WHEN COUNT(*) > 0 THEN '符合' ELSE '不符合' END
+FROM table3 WHERE complex_condition;
+```
+
+### 8.3. 復原操作的標準方法 (Standard Recovery Procedures)
+
+當需要復原某個業務操作時，遵循以下標準流程：
+
+#### 影響範圍分析 (Impact Scope Analysis)
+
+- **SQL 分析 (SQL Analysis)**: 從執行程序的 SQL 分析影響的資料表
+- **表關係 (Table Relationships)**: 識別主要資料表和關聯資料表
+- **狀態識別 (Status Identification)**: 確認狀態欄位的變更
+
+#### 復原順序原則 (Recovery Sequence Principles)
+
+```sql
+BEGIN
+    -- 1. 先刪除子表資料（避免外鍵約束問題）
+    DELETE FROM child_table WHERE key = 'target';
+
+    -- 2. 再復原主表狀態
+    UPDATE main_table
+    SET status = 'original_status',
+        confirm_date = NULL,
+        confirm_user = NULL
+    WHERE key = 'target';
+
+    -- 3. 最後處理相關的狀態更新
+    UPDATE related_table SET flag = NULL WHERE key = 'target';
+
+    COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+```
+
+#### 復原完整性檢查 (Recovery Integrity Check)
+
+- **驗證 SQL (Validation SQL)**: 提供驗證 SQL 確認復原結果
+- **完整性檢查 (Integrity Check)**: 檢查是否有遺漏的資料表
+- **狀態確認 (Status Confirmation)**: 確認業務狀態回到預期狀態
+
+### 8.4. SQL 查詢優化的診斷思路 (SQL Query Optimization Diagnostics)
+
+#### 複雜查詢的分解技巧
+
+```sql
+-- 將複雜的 EXISTS 子查詢分解為可讀性更高的形式
+
+-- 原查詢：
+WHERE EXISTS (SELECT 1 FROM table2 WHERE complex_conditions)
+
+-- 分解為：
+-- 步驟1：先查出符合條件的 key
+SELECT key FROM table2 WHERE complex_conditions;
+
+-- 步驟2：再用 IN 查詢
+WHERE main_key IN (上述查詢結果);
+```
+
+#### 查詢條件的優先級診斷
+
+- **高選擇性條件優先**: 如唯一鍵、狀態欄位
+- **索引友好條件**: 避免函數包裹欄位
+- **業務邏輯條件分組**: 將相關的業務條件放在一起
+
+### 8.5. 常見問題模式與解決方案 (Common Problem Patterns & Solutions)
+
+#### 模式1：「版本差異」類問題
+
+- **現象**: 操作完成但資料不出現在特定查詢中
+- **診斷**: 檢查版本欄位、狀態欄位的實際值
+- **解決**: 確認業務邏輯是否需要產生版本差異
+- **範例**: WOU010DG 執行後不出現在 WOC030DG，因為版本沒有差異
+
+#### 模式2：「權限過濾」類問題
+
+- **現象**: 管理員看得到，一般用戶看不到
+- **診斷**: 檢查使用者權限相關的 WHERE 條件
+- **解決**: 確認用戶權限設定或調整查詢條件
+
+#### 模式3：「時間窗口」類問題
+
+- **現象**: 資料存在但查詢有時間限制
+- **診斷**: 檢查日期相關的條件（如出貨日期 15天限制）
+- **解決**: 確認時間邏輯或調整時間範圍
+
+#### 模式4：「子查詢條件」類問題
+
+- **現象**: 主表資料存在，但子查詢條件不符合
+- **診斷**: 檢查 EXISTS、IN 等子查詢的具體條件
+- **解決**: 確認子表資料狀態或業務邏輯
+- **範例**: MD157 明細表中數量已歸還完畢，不符合借用查詢條件
+
+### 8.6. 工具使用最佳實踐 (Tool Usage Best Practices)
+
+#### Token 節省的診斷策略
+
+```bash
+# 優先使用本地搜尋進行大範圍分析
+rg "關鍵字" --type sql -A 5 -B 5
+
+# 統計使用模式
+rg "條件" -c | sort -nr
+
+# 找出相關檔案後再精準讀取
+rg "程式名稱" --files-with-matches
+```
+
+#### 批次驗證方法
+
+- **批次執行**: 一次執行多個相關的檢查 SQL
+- **結果整合**: 使用 UNION ALL 組合多個檢查結果
+- **模板建立**: 建立診斷模板供重複使用
+
+#### 診斷 SQL 模板
+
+```sql
+-- 通用診斷模板
+SELECT
+    '主表檢查' AS 項目,
+    CASE WHEN COUNT(*) > 0 THEN '存在' ELSE '不存在' END AS 結果,
+    TO_CHAR(COUNT(*)) AS 數量
+FROM main_table WHERE key = 'target'
+UNION ALL
+SELECT
+    '狀態檢查',
+    status_field,
+    '1'
+FROM main_table WHERE key = 'target'
+UNION ALL
+SELECT
+    '關聯檢查',
+    CASE WHEN COUNT(*) > 0 THEN '正常' ELSE '異常' END,
+    TO_CHAR(COUNT(*))
+FROM related_table WHERE foreign_key = 'target';
+```
+
+### 8.7. 實戰案例參考 (Practical Case References)
+
+#### 案例1：製令展開後不出現問題
+
+- **問題**: LOT_NO 在 WOU010DG 執行後不出現在 WOC030DG
+- **診斷過程**:
+  1. 確認 WOU010DG 執行成功（WO020_FLAG = '3'）
+  2. 檢查 WOC030DG 查詢條件
+  3. 發現版本差異條件不符合
+- **解決方案**: 確認這是正常業務邏輯，無版本差異時不需要確認
+
+#### 案例2：借用歸還查詢問題
+
+- **問題**: MD156 借用單查詢不到特定資料
+- **診斷過程**:
+  1. 逐項檢查 WHERE 條件
+  2. 使用 LEFT JOIN 診斷關聯問題
+  3. 發現 MD157 子查詢條件不符合
+- **解決方案**: 確認借用物品已全部歸還，查詢邏輯正確
+
+這些方法論可以應用到類似的業務問題分析中，提高問題診斷的效率和準確性。
+
+---
+
+## 20. 通用開發架構與最佳實踐 (General Development Architecture & Best Practices)
+
+### 9.2. 命名規範與程式碼風格 (舊有規範保留)
+
+#### 命名規範
+
+- 所有 private 成員（包含變數與方法）必須以底線開頭：`private _service`, `private _callReport()`
+- 檔案名稱使用小寫：`clq080.component.ts`
+- 類別名稱使用 PascalCase：`Clq080Component`
+
+#### 前端排版規範
+
+- **🚨 重要：排版時優先使用 `resize-layout` 系統**
+- **切勿自行產生 HTML `<div>`、`<span>` 等元件進行排版**
+- 所有頁面布局都應透過 `resize-layout` 的指令和模板來實現
+- 使用 `resizeLayoutTemplate` 指令定義布局區塊
+- 透過 `ResizeLayoutRefs` 管理布局狀態
+
+#### SCSS 檔案規範
+
+- **SCSS 檔案預設為空白**，僅供使用者根據需要進行客製化修改
+- 不要在 SCSS 檔案中預先定義樣式，保持檔案的乾淨
+- 使用者可根據實際需求在 SCSS 檔案中添加特定的樣式調整
+
+### 9.3. 系統回傳值與錯誤處理約定
+
+#### 標準回傳值約定
+
+- **RESULT = "0"** → 操作成功
+- **RESULT = "1"** → 操作失敗 (業務邏輯限制)
+
+#### 前端錯誤處理模式
+
+```typescript
+response: (res: any) => {
+  if (res.resCode != "0") {
+    // 注意：0為成功
+    this._notificationService.showWarning("具體的業務錯誤訊息");
+  }
+};
+```
+
+### 9.4. PKG開發與部署規範
+
+- **🚨 程式碼風格**:
+  - **嚴禁行末空白**: 每一行結束後不應留有任何空白字元。
+  - **變數宣告連續性**: 在 IS 與 BEGIN 之間的變數宣告區塊，各變數之間 **不應留空行**。
+
+#### PKG建立標準流程
+
+1. **程式命名規則**：`PK_[MODULE]_[PROGRAM_CODE]`
+   - 範例：`PK_CL_CLQ080`, `PK_DP_DPI580`
+
+2. **程序命名規則**：`PC_[PROGRAM_CODE]_[ACTION]_[TABLE]`
+   - 範例：`PC_CLQ080_QUERY_CL040`, `PC_CLQ080_UPSERT_CL050`
+
+3. **標準程序類型**：
+   - `QUERY` - 資料查詢
+   - `UPSERT` - 新增/修改
+   - `DELETE` - 刪除
+
+#### 🚨 PKG開發重要原則
+
+**完全參考 DPI580 格式**：
+
+- ✅ **ROW_NUMBER 分頁處理**：必須使用 `Row_Number() Over (ORDER BY ...) ITEM`
+- ✅ **StartRow/EndRow 分頁控制**：`WHERE A.ITEM >= StartRow AND A.ITEM <= EndRow`
+- ✅ **SortCondition 和 FilterCondition 支援**：動態排序和篩選
+- ✅ **無錯誤處理**：PKG 遇到錯誤不進行任何處理，讓系統自然處理
+- ✅ **JSON 承載模式**：使用 `vJson CLOB` 參數傳遞所有查詢條件
+
+**禁止事項**：
+
+- ❌ **不可自創分頁邏輯**：必須完全按照 DPI580 的 ROW_NUMBER 模式
+- ❌ **不可添加 EXCEPTION 處理**：PKG 程序直接結束，不處理錯誤
+- ❌ **不可檢查參數 NULL 值**：直接使用參數，不做額外檢查
+- ❌ **不可使用 WHERE 1=0**：避免返回空結果的特殊處理
+
+#### Grant權限授權規則
+
+🚨 **重要**：每次新增PKG都必須更新對應的grant檔案
+
+**檔案位置**：`DLP.SQL\[環境]\DCL\grant_[模組].sql`
+
+**命名對應規則**：
+
+- CL模組 → `grant_CL.sql`
+- DP模組 → `grant_DP.sql`
+- SD模組 → `grant_SD.sql`
+- 其他模組 → `grant_[模組名].sql`
+
+**授權語法**：
+
+```sql
+GRANT execute ON PK_[MODULE]_[PROGRAM] TO dotnet_role;/
+```
+
+**範例**：
+
+```sql
+-- 新增到 grant_CL.sql
+GRANT execute ON PK_CL_CLQ080 TO dotnet_role;/
+
+-- 新增到 grant_DP.sql
+GRANT execute ON PK_DP_DPI580 TO dotnet_role;/
+```
+
+#### PKG檔案路徑規範
+
+- **通用規則**：前端程式路徑對應SQL路徑
+  - `app/views/[module]/vn/` → `DLP.SQL/VN/DDL/[MODULE]/`
+  - `app/views/[module]/dg/` → `DLP.SQL/DG/DDL/[MODULE]/`
+  - `app/views/[module]/tw/` → `DLP.SQL/TW/DDL/[MODULE]/`
+- **檔案命名**：`PK_[MODULE]_[PROGRAM].sql`
+- **檢查方法**：根據前端程式所在地區資料夾決定SQL路徑
+
+#### 常見PKG程序模板
+
+**Package宣告範例** (PK_DP_DPI580)：
+
+```sql
+create or replace PACKAGE PK_DP_DPI580 AS
+    PROCEDURE PC_DPI580_QUERY_DP580 (
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR,
+        vCount OUT SYS_REFCURSOR
+    );
+    PROCEDURE PC_DPI580_UPSERT_DP580(
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR
+    );
+    PROCEDURE PC_DPI580_DELETE_DP580(
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR
+    );
+    PROCEDURE PC_DPI580_QUERY_DP581 (
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR,
+        vCount OUT SYS_REFCURSOR
+    );
+    PROCEDURE PC_DPI580_UPSERT_DP581(
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR
+    );
+    PROCEDURE PC_DPI580_DELETE_DP581(
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR
+    );
+    -- LOV 查詢程序
+    PROCEDURE PC_DPI580_LOV_SD100 (
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR,
+        vCount OUT SYS_REFCURSOR
+    );
+    PROCEDURE PC_DPI580_LOV_DP582 (
+        vJson CLOB,
+        vResult OUT SYS_REFCURSOR,
+        vCount OUT SYS_REFCURSOR
+    );
+END PK_DP_DPI580;
+```
+
+## 21. 常見問題與解決方案
+
+### 程式碼品質與規範
+
+#### 1. Import 路徑錯誤
+
+**問題**：TypeScript 模組找不到或路徑錯誤
+**解決方案**：
+
+- 檢查相對路徑是否正確（`../` vs `../../`）
+- 確認模組名稱拼寫正確
+- 參考同目錄下其他文件的 import 路徑
+
+#### 2. Constructor 初始化問題
+
+**問題**：類別屬性未在 constructor 中正確初始化
+**解決方案**：
+
+- 所有 public 屬性都應在 constructor 中初始化
+- 使用 `new` 關鍵字創建物件實例
+- 避免空 constructor，確保所有依賴都被正確設置
+
+#### 3. 程式碼格式問題
+
+**問題**：空白行包含空白字符、行尾空白
+**解決方案**：
+
+- 空行應完全空白，不包含任何字符
+- 移除所有行尾空白字符
+- 使用編輯器的自動格式化功能
+- **🚨 重要**：此原則適用於所有檔案類型，包括 PKG (.sql)、前端 (.ts, .html, .scss)、後端 (.cs) 等
+
+#### 4. 註解規範
+
+**問題**：不必要的註解或註解位置錯誤
+**解決方案**：
+
+- SCSS 文件保持完全空白，不包含任何註解
+- Package Specification 保持簡潔，詳細註解放在 Package Body
+- 移除過時的註解和說明文字
+
+### 資料庫與後端開發
+
+#### 5. PL/SQL Package 開發規範
+
+**問題**：Package 結構和註解格式不正確
+**解決方案**：
+
+- Package Specification 只包含程序宣告，不包含詳細註解
+- Package Body 中的每個 Procedure 都應包含完整的註解區塊
+- 註解應包含：名稱、功能說明、原設計者、設立日期
+- 設立日期使用實際的開發日期
+
+#### 6. SQL 語句組裝
+
+**問題**：不必要的 SQL 語句重新組裝
+**解決方案**：
+
+- 盡量在單一 `vSQLStmt :=` 語句中完成 SQL 組裝
+- 避免使用 `vSQLStmt := vSQLStmt || ...` 的方式
+- 保持 SQL 語句結構清晰和完整
+
+### 前端開發
+
+#### 7. Angular 組件架構
+
+**問題**：State-Control-Service-Component 架構使用不當
+**解決方案**：
+
+- State：管理組件狀態和配置
+- Control：定義 Grid 欄位配置
+- Service：處理資料查詢邏輯
+- Component：協調各層級並處理 UI 事件
+
+#### 8. Grid 欄位配置
+
+**問題**：不必要的樣式設定或欄位配置錯誤
+**解決方案**：
+
+- 移除不必要的 `cellStyle` 設定
+- 根據實際需求配置欄位寬度和類型
+- 保持欄位定義簡潔，符合系統標準
+
+#### 9. 布局配置
+
+**問題**：ResizeLayoutRefs 配置結構錯誤
+**解決方案**：
+
+- 使用正確的 import 路徑：`app/shared/states/resize-layout.refs`
+- 配置結構使用 `rows` 和 `cols` 格式
+- Constructor 需要傳入配置物件參數
+
+---
+
+## 22. 複雜 Component 實作最佳實踐 (Complex Component Best Practices)
+
+針對包含多個頁籤 (Tabs)、巢狀版面 (Nested Layouts) 或自定義彈窗 (Dialogs) 的複雜頁面，必須遵循以下實作規範（參考 `PMI410VN`）。
+
+### 22.1 模板抓取與綁定 (ViewChildren & Templates)
+
+當 HTML 中有多個 `<ng-template>` 且使用不同指令時，應在 Component 中明確宣告並在 `ngAfterViewInit` 中綁定。
+
+- **Component 宣告**:
+
+  ```typescript
+  @ViewChildren(ResizeLayoutTemplateDirective)
+  layoutTemplates!: QueryList<ResizeLayoutTemplateDirective>;
+
+  @ViewChildren(TabTemplateDirective)
+  private _tabTemplates!: QueryList<TabTemplateDirective>;
+  tabTemplates: QueryList<TabTemplateDirective>; // 用於 HTML 綁定
+
+  @ViewChildren(CustomizeModelDialogTemplateDirective)
+  private _customizeTemplates!: QueryList<CustomizeModelDialogTemplateDirective>;
+  ```
+
+- **生命週期賦值**:
+  ```typescript
+  ngAfterViewInit(): void {
+    this.tabTemplates = this._tabTemplates;
+    // 將特定彈窗模板過濾並存入 State，供 Service 呼叫彈窗時使用
+    this.state.customDialogTemplate = this._customizeTemplates.filter(
+      (item) => item.key === 'yourDialogKey'
+    );
+  }
+  ```
+
+### 22.2 動態頁籤管理 (Dynamic Tabs)
+
+若頁籤需根據權限或狀態動態顯示，應在 `ngOnInit` 或 Service 中處理。
+
+- **實作模式**:
+  ```typescript
+  public checkUserRole() {
+    this._api.callSpDataSet('PK_XXX.PC_CHECK_ROLE', { ... }).subscribe((result) => {
+      const data = result?.dsResult?.Table[0];
+      const tabs = [{ label: '基本頁籤1' }, { label: '基本頁籤2' }];
+
+      if (data.HAS_ADMIN_ACCESS === 'Y') {
+        tabs.push({ label: '管理員專用頁籤' });
+      }
+
+      // 更新 State 中的 tabControls
+      this.state.tabRefs.tabControls = tabs;
+    });
+  }
+  ```
+
+### 22.3 Grid 事件委派規範
+
+Component 應僅負責協調，具體的業務邏輯、API 呼叫與訊息顯示應委派給 **Service**。
+
+- **正確做法**:
+
+  ```typescript
+  // Component
+  onGridSave($event: DlpGridSaveEvent) {
+    this._pmi410Service.updateData($event);
+  }
+
+  // Service
+  updateData($event: DlpGridSaveEvent) {
+    this._pmi410.gridRefs.executeUpsert('PK_XXX.PC_UPSERT', { ... });
+  }
+  ```
+
+### 22.4 State 中的 API 參數宣告
+
+State 應統一宣告 API 參數，並區分一般與共用型別。
+
+- **實作模式**:
+
+  ```typescript
+  import { BaseApiParams, ECommonApiType } from 'dlp-shared-models';
+
+  public apiParams: BaseApiParams = {
+    moduleNo: 'PM',
+    programNo: 'PMI410',
+  };
+
+  public commonApiParams: BaseApiParams = {
+    moduleNo: 'PM',
+    programNo: 'PMI410',
+    commonApiType: ECommonApiType.CallStoreProcedureDataSet,
+  };
+  ```
+
+### 22.5 Service 中的屬性命名
+
+Service 中注入 State 時，亦應遵循冠以小寫程式名稱的規範。
+
+- **正確做法**:
+  ```typescript
+  constructor(
+    private _pmi410: Pmi410State, // 而非 _state
+    private _api: ApiService,
+    private _notification: NotificationService
+  ) {}
+  ```
+
+---
+
+## 23. 使用者互動與導航實作 (User Interaction & Navigation)
+
+除了基礎的 Grid/Form 操作外，專案中常見的高級互動功能（彈窗、確認、跳轉）也有標準的實作模式（參考 `PMI410VN`）。
+
+### 23.1 自定義彈窗模式 (Custom Dialog Pattern)
+
+當需要顯示包含表單或自定義內容的彈窗時（如：輸入作廢原因），應使用 `CustomizeModelDialogComponent`。
+
+1.  **HTML 模板**: 使用 `customizeModelDialogTemplate` 指令定義彈窗內容。
+
+    ```html
+    <ng-template customizeModelDialogTemplate key="voidReasonDialog">
+      <dlp-form [formRefs]="state.voidReasonFormRefs"></dlp-form>
+    </ng-template>
+    ```
+
+2.  **Component**: 抓取模板並存入 State。
+
+    ```typescript
+    @ViewChildren(CustomizeModelDialogTemplateDirective)
+    private _customizeTemplates!: QueryList<CustomizeModelDialogTemplateDirective>;
+
+    ngAfterViewInit(): void {
+      this.state.dialogTemplate = this._customizeTemplates.filter(
+        (item) => item.key === 'voidReasonDialog'
+      );
+    }
+    ```
+
+3.  **Service**: 呼叫 `MatDialog` 開啟彈窗。
+
+    ```typescript
+    import { MatDialog } from '@angular/material/dialog';
+    import { CustomizeModelDialogComponent } from 'dlp-shared-components';
+
+    constructor(private _dialog: MatDialog) {}
+
+    openVoidDialog(rowData: any) {
+      const dialogRef = this._dialog.open(CustomizeModelDialogComponent, {
+        width: '500px',
+        disableClose: true,
+        data: {
+          title: '作廢原因',
+          buttons: [
+            {
+              text: '取消',
+              onClick: (dialog) => dialog.dialogRef.close(),
+            },
+            {
+              text: '確認',
+              color: 'primary',
+              onClick: (dialog) => {
+                const reason = this._state.voidReasonFormRefs.formData.reason;
+                if (!reason) {
+                  this._notification.showWarning('請輸入原因');
+                  return;
+                }
+                dialog.dialogRef.close(reason);
+              },
+            },
+          ],
+          templates: this._state.dialogTemplate, // 傳入模板
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.executeVoid(rowData, result); // 執行後續動作
+        }
+      });
+    }
+    ```
+
+### 23.2 確認對話框模式 (Confirmation Pattern)
+
+在執行刪除、結案等重大操作前，必須要求使用者確認。
+
+- **Service**:
+
+  ```typescript
+  import { AppConfirmService } from 'dlp-shared-components';
+
+  constructor(private _confirm: AppConfirmService) {}
+
+  deleteData(id: string) {
+    this._confirm.confirm({
+      title: '確認刪除',
+      message: '您確定要刪除這筆資料嗎？',
+    }).subscribe((res) => {
+      if (res) {
+        // 使用者點選確認，執行 API
+        this._api.callSp(...);
+      }
+    });
+  }
+  ```
+
+### 23.3 跨程式跳轉模式 (Cross-Program Navigation)
+
+當需要從當前頁面跳轉至系統內的其他功能頁面時。
+
+- **Service**:
+
+  ```typescript
+  import { RedirectService } from 'app/aidc-shared/services/redirect.service';
+
+  constructor(private _redirectServ: RedirectService) {}
+
+  goToReport() {
+    // 參數: 模組代號, 子模組代號, 程式代號
+    this._redirectServ.goto('PM', 'PMR', 'PMR520VN');
+  }
+  ```
+
+---
+
+## 24. Grid 進階欄位設定 (Advanced Grid Column Configuration)
+
+### 24.1 互動式 Checkbox (一點即中模式)
+
+若要在 Grid 中實作類似開關的 Checkbox，點擊即觸發更新而不需進入編輯模式，請使用以下設定組合：
+
+```typescript
+{
+  field: 'IS_ACTIVE',
+  headerName: '啟用',
+  width: 60,
+  type: EDlpGridColumnType.checkbox,
+  checkboxValueType: EDlpGridCheckboxValueType.string, // 指定值類型 ('Y'/'N' 或 '1'/'0')
+  editable: true,             // 必須為 true，否則無法觸發事件
+  cellRendererEditable: true, // 關鍵：允許在渲染層直接點擊修改
+  checkDirty: false,          // 選用：若為即時更新，可關閉髒值標記
+  onCellClicked: (event) => {
+    // 推薦：直接在此處呼叫 Service 執行更新
+    this._service.updateStatus(event.data);
+  },
+}
+```
+
+### 24.2 即時操作服務模式 (Immediate Action Service Pattern)
+
+配合 § 24.1 的 Checkbox 點擊事件，Service 層應依照以下標準實作：
+
+- **核心 API**: `callSpDataSet` (對應後端 Mode F)。
+- **參數規範**: 必須包含 `refCursorKeys: ['vResult']`。
+- **成功判定**: 檢查 `RESULT === '1'`。
+
+```typescript
+public updateAction = (rowData: any): void => {
+  const payload = { ...rowData }; // 封裝必要的異動欄位
+
+  this._api.callSpDataSet('PK_XXX.PC_XXX_ACTION', {
+    payload: payload,
+    refCursorKeys: ['vResult'],
+  }).subscribe({
+    next: (res: any) => {
+      // 標準解析邏輯
+      if (res.dsResult?.Table1?.[0]?.RESULT === '1') {
+        this._notificationService.showSuccess('更新成功');
+        // 根據需求決定是否刷新 Grid (一般建議不刷新以保持流暢)
+      } else {
+        const errorMsg = res.dsResult?.Table1?.[0]?.RESULT || '更新失敗';
+        this._notificationService.showError(errorMsg);
+      }
+    },
+    error: () => this._notificationService.showError('系統發生錯誤')
+  });
+};
+```
+
+---
+
+## 附錄 A: 常用名詞對照表 (Appendix A: Glossary)
+
+本詞彙表旨在整理專案中常見的縮寫、代碼與欄位名稱，方便快速理解其業務含義。
+
+| 詞彙 (Term)               | 中文                                        |
+| :------------------------ | :------------------------------------------ |
+| `ACCOUNT_NO`              | 會計科目                                    |
+| `ACTUAL_PROD_QTY`         | 實際生產                                    |
+| `ADD_AMT`                 | 本期增加金額                                |
+| `AMT`                     | 金額 (Amount)                               |
+| `BOOK_AMT`                | 帳面價值                                    |
+| `BOOK_MONTH`              | 已提列月數                                  |
+| `CAP_DIFFE`               | 產能差異                                    |
+| `CARTON_HIGHT`            | 箱高                                        |
+| `CARTON_LENGTH`           | 箱長                                        |
+| `CARTON_QTY`              | 箱數                                        |
+| `CARTON_WIDTH`            | 箱寬                                        |
+| `CCC_CODE`                | 稅則號列                                    |
+| `CFM_DATE`                | 確認日期                                    |
+| `CFM_QUL`                 | 確認品質                                    |
+| `CHI_NAME`                | 中文名稱                                    |
+| `COLOR_ABE`               | 顏色簡稱                                    |
+| `COMPANY_NO`              | 公司                                        |
+| `COUNTRY_NO`              | 國別                                        |
+| `CURRENCY`                | 幣別                                        |
+| `CURRENCY_NO`             | 幣別 / 幣別代號                             |
+| `CUSTOMER_NO`             | 客戶代碼 / 客戶編號                         |
+| `CUST_BUYER`              | 客戶採購                                    |
+| `CUST_NO`                 | 客戶編號 (Customer No.) / 客戶別 / 客戶     |
+| `CUST_PO_DATE`            | 客戶PO日期 (Customer PO Date)               |
+| `CUT_DATE`                | 裁斷日期                                    |
+| `CUT_QTY`                 | 裁斷雙數                                    |
+| `DEPART_NO`               | 部門                                        |
+| `DEPT_NO`                 | 部門編號 (Department No.)                   |
+| `DLV_NO`                  | 送貨單號                                    |
+| `DLV_QTY`                 | 送貨數量                                    |
+| `DUE_DATE`                | 應交日期 (Due Date)                         |
+| `EMP_NAME`                | 姓名                                        |
+| `EMP_NO`                  | 員工編號 (Employee No.)                     |
+| `ENG_NAME`                | 英文名稱                                    |
+| `ETC`                     | 預計交期 (Est. Time of Completion)          |
+| `EXP_NO`                  | 報關單號                                    |
+| `FAC_QTY`                 | 廠區產能                                    |
+| `FACTORY_NO`              | 廠區 / 廠區編號 / 廠區代號                  |
+| `FIN_QTY`                 | 成型雙數                                    |
+| `FLAG`                    | 標記 (Flag)                                 |
+| `FLOOR_NO`                | 樓層                                        |
+| `GENDER_NO`               | GENDER                                      |
+| `GROSS_WEIGHT`            | 毛重                                        |
+| `GROUP_NAME`              | 群組                                        |
+| `INV_QTY`                 | 庫存量                                      |
+| `ITEM_NO`                 | 料號 / 品號                                 |
+| `LAST_AC_AMT`             | 期末累計折舊                                |
+| `LAST_AC_DATE`            | 最後折舊日期                                |
+| `LIFE_MONTH`              | 使用月數                                    |
+| `LOC_NO`                  | 儲位編號 (Location No.)                     |
+| `LOCATION`                | 存放位置                                    |
+| `LOT_NO`                  | 製令編號 (最常用) / 製令 / 樣品編號 (DP210) |
+| `MBO_NO`                  | 採購單號                                    |
+| `MOLD_NO`                 | 底模編號                                    |
+| `MOLD_STYLE`              | 型體大類                                    |
+| `MTR_NO`                  | 料號                                        |
+| `NAME_ABE`                | 名稱/簡稱                                   |
+| `NET_WEIGHT`              | 淨重                                        |
+| `ORD_DATE`                | 訂單日期                                    |
+| `ORD_NO` / `ORDER_NO`     | 訂單編號 (Order No.)                        |
+| `ORD_QTY`                 | 訂單數量 / 製令數量 / 訂單雙數              |
+| `PAIRS`                   | 雙數                                        |
+| `PAYMENTS`                | 付款條件                                    |
+| `PDLINE_NAME`             | 線別名稱                                    |
+| `PO_DATE`                 | 採購單日期                                  |
+| `PO_NO`                   | 採購單號 (Purchase Order No.)               |
+| `PRE_ETC`                 | 工廠交期                                    |
+| `PRICE`                   | 單價                                        |
+| `PRICE_STYLE`             | 價格型體                                    |
+| `PROD_TYPE`               | 產品類別                                    |
+| `PUR_NO`                  | 採購單號                                    |
+| `PWR_DATE`                | 生效日 / 生效日期                           |
+| `QTY`                     | 數量 (Quantity) / 雙數 (製鞋業)             |
+| `REC_DATE`                | 收料日期                                    |
+| `REC_QTY`                 | 收料數量                                    |
+| `REMARK`                  | 備註                                        |
+| `REQ_DATE`                | 需求日期 (Request Date)                     |
+| `SHP_DATE`                | 出貨日                                      |
+| `SHP_QTY`                 | 出貨數量                                    |
+| `SHIP_DATE`               | 出貨日期 (Shipping Date)                    |
+| `SIZE`                    | Size                                        |
+| `SLIP_NO`                 | 單據編號                                    |
+| `SORT`                    | 排序                                        |
+| `SPEC`                    | 規格 (Specification)                        |
+| `ST_QTY`                  | 針車雙數                                    |
+| `STD_QTY`                 | 標準用量                                    |
+| `STOCK_NO`                | 倉庫                                        |
+| `STYLE`                   | 型體                                        |
+| `SUB_CODE`                | 會計科目                                    |
+| `SUM_NO`                  | 匯總單號                                    |
+| `TOTAL_CBM`               | 總材積                                      |
+| `TOTAL_SHP_QTY`           | 總出貨量                                    |
+| `TRAN_DATE`               | 交易日期 (Transaction Date)                 |
+| `UNIT`                    | 單位                                        |
+| `UNIT_PRICE` / `UP_PRICE` | 單價                                        |
+| `USAGE`                   | 用量                                        |
+| `USER_ID`                 | 使用者帳號                                  |
+| `VENDOR_NO`               | 廠商/供應商編號 (Vendor No.)                |
+| `VOU_DATE`                | 傳票日期                                    |
+| `VOU_NO`                  | 傳票號碼                                    |
+| `WH_NO`                   | 倉庫編號 (Warehouse No.)                    |
+| `YYYYMM`                  | 年月                                        |
+
+## ﻿
+
+## 24. 2026/01/21-22 開發增補規範 (APR130VN / PMU200 實戰心得)
+
+### 24.1 前端開發核心檢查清單 (強化版)
+
+開發新 Component 時，除了基本檔案外，必須確保以下檔案存在：
+
+- **\*.component.scss**: 即使目前無樣式，也 **必須建立實體檔案**，否則 Angular 編譯會報錯。 ✅
+- **grant\_[Module].sql**: 每次新增 PKG 必須同步更新授權檔。 ✅
+
+### 24.2 dlp-form 最新寫作規範
+
+- **Type 屬性**: 統一使用 **字串字面量** (如 ype: 'select', ype: 'button', ype: 'lov')，不再建議使用 EFieldType Enum，以保持代碼簡潔。
+- **強型別參數**: 在 Control 層的所有回呼函式 (如 onValueChanged, payload, onClick)，其參數 **必須宣告明確型別** (如 : DlpFieldValueChangedParams, : IFormLovPayloadParams)，嚴禁 implicit any。
+- **內嵌 LOV 模式**: 為了提高維護性，供應商或物料等 LOV 的完整配置 (colDefs, queryAction, keyMapping, payload)應直接定義在 control.ts 的欄位配置中。
+- **簡化 Button 事件**: 若 onClick 邏輯中不需要 params 資料，可直接簡寫為 () => this.\_service.fn()。
+
+### 24.3 進階服務錯誤處理模式 (多語系優化)
+
+當後端邏輯包含多種錯誤原因且需要動態變數時，應遵循此模式：
+
+- **後端**: 回傳 RES_CODE (狀態碼) 並拆解訊息變數為 P1_STR, P2_STR, P3_STR, P4_STR。
+- **前端**: 使用 switch (resCode) 進行分支處理。
+- **多語系**: 訊息模板定義在前端 (以利掃描)，變數透過 showWarning 的第二個參數陣列傳入。
+  `	ypescript
+this._notificationService.showWarning('供應商 {0} 於 {1} 年已列印', [p1, p2], false);
+`
+
+### 24.4 報表程式原則
+
+- **離開按鈕**: 改寫為 Web 版時，FMB/TXT 中的「離開」按鈕 **不需實作**。
+
+### 24.5 ApiService 呼叫潛規則
+
+- **Payload 不可為空**: 呼叫 callSpDataSet 時，payload 參數 **絕對不可為空物件** {}。若後端不需要參數，請傳入 { dummy: '1' }，否則會因參數綁定失敗導致 PLS-00306 錯誤。
+
+### 20.2 程式碼格式潔癖 (Code Cleanliness Standard)
+
+為了確保跨環境顯示的一致性與版本控制的整潔，所有檔案修改必須遵循：
+
+- **嚴禁行末空白 (No Trailing Spaces)**: 每一行結束後不應留有任何看不見的空白字元。
+- **純淨換行 (Clean Newlines)**: 空行必須僅包含換行符號
+  ，不應包含空格或縮排字元。
+
+### 25. DLP 專案 SQL 強制標準規範 (SQL Development Standards)
+
+為了確保 Oracle PL/SQL 開發具備高度一致性與可維護性，所有 SQL 開發與修改必須嚴格遵守以下所有條款，不得有任何例外。
+
+#### 25.1 命名規範 (Naming Standards)
+* **Package 命名**：`PK_[模組]_[程式代號]` (例如：`PK_PM_PMB040`)。
+* **Procedure 命名**：必須遵循 `PC_[程式代號]_[動詞]_[對象]` 的結構。
+  * 前綴固定為 `PC_`。
+  * **動詞嚴格限制**：`QUERY` (查詢), `UPSERT` (新增或更新), `DELETE` (刪除), `GET` (取得單一值), `CHK` (邏輯或資料檢核), `LOV` (開窗多筆查詢)。
+  * **範例**：`PC_PMB040_QUERY_PM220`。
+
+#### 25.2 參數宣告與排版 (Parameters Layout)
+* 參數左側統一對齊 (4 或 8 個空白縮排)。
+* **強制一行宣告一個參數**，不得將多個參數併在同一行。
+* JSON 傳入參數固定為第一個，命名為 `vJson CLOB`。
+* **輸出結果集**：
+  * **查詢類**：`vInfo OUT SYS_REFCURSOR`, `vCount OUT SYS_REFCURSOR` (若有加總再額外宣告 `vSumQty OUT SYS_REFCURSOR`)。
+  * **操作類**：狀態判定應回傳 `Result OUT VARCHAR2` 或是 `vResult OUT SYS_REFCURSOR`。
+
+#### 25.3 SQL 語法對齊排版 (SQL Alignment)
+* `SELECT` 關鍵字必須獨立一行。
+* 提取出的欄位必須從 `SELECT` 下方開始縮排 (4 個空白)，**堅持一行一個欄位**，每個逗號 `,` 緊接在欄位最後。
+* `FROM`, `LEFT JOIN`, `WHERE`, `AND`, `OR` 必須置於每行開頭，並依據邏輯階層向內縮排，**禁止自行改變縮排與對齊方式**。
+* **JOIN 條件**：`ON` 條件接在 `JOIN` 語句同一行，若有額外過濾條件，使用 `AND` 換行並精準對向內齊。
+* **子查詢 (Subquery)**：若條件為 `IN (SELECT ...)`，內層的 `SELECT` 強制向內縮排一層，外圍的 `(` 與 `)` 必須對齊。
+
+#### 25.4 分頁與動態查詢模式 (Consistent Pagination)
+* **架構一致性**：所有具備查詢、篩選功能之 Procedure，必須使用 `vSQLStmt VARCHAR2` 拼接動態 SQL。
+* **分頁與排序寫法**：強制定義於 `Row_Number() Over()` 內做為第一欄，並命名為 `ITEM`：
+  `SELECT Row_Number() Over(ORDER BY ' || vParam.SortCondition || ' A.預設欄位) ITEM, A.*`
+* **過濾條件模式**：動態條件必須接在最外層的 `WHERE`，不得直接寫定於內層：
+  `WHERE ' || vParam.FilterCondition;`
+* **雙重回傳機制**：資料集與總筆數兩者必須透過同一組 `vSQLStmt` 基底回傳：
+  `OPEN vInfo FOR 'SELECT A.* FROM (' || vSQLStmt || ') A';`
+  `OPEN vCount FOR 'SELECT COUNT(*) AS TOTAL_COUNT FROM (' || vSQLStmt || ')';`
+
+#### 25.5 JSON 解析標準 (JSON_TABLE Usage)
+* **強制使用 CURSOR 搭配 JSON_TABLE** 進行 JSON 解析，避免疊床架屋的字串處理。
+* **根節點查詢參數**：使用 `'$'` 作為路徑，讀取如 `StartRow`, `EndRow`, `FilterCondition`, `SortCondition` 等屬性。
+* **陣列資料處理** (批次新增/更新)：強制使用 `$.[陣列名稱][*]` (例：`$.UpsertData[*]`) 取出資料集合，並以 `FOR ... IN ... LOOP` 進行一筆筆的 DML 操作。
+
+#### 25.6 例外處理寫法 (Standard Exception)
+* 每一個涉及資料異動 (DML) 的 Procedure，其結尾必須有一套防護的例外處理區塊。
+* **強制規範**：必須包含 `ROLLBACK;`，並透過 `SUBSTRB(SQLERRM, 1, 300)` 限制錯誤訊息長度以避免 Oracle Buffer Overflow。
+  ```sql
+  EXCEPTION
+      WHEN OTHERS THEN
+          Result := '-1';
+          RAISE_APPLICATION_ERROR(-20000, SUBSTRB(SQLERRM, 1, 300));
+          ROLLBACK;
+  ```
+
+#### 25.7 註解區塊格式 (Standard Comment Block)
+* 所有 Procedure 宣告正上方**強制放置標準註釋區塊**，格式與星號/減號數量不得縮水或修改。
+* `功能說明` 不得留白或只寫「查詢」、「存檔」，需將邏輯與影響對象明確寫出。
+  ```sql
+  /*
+  --------------------------------------------------------------------------
+  --  名稱: PC_[程式代號]_[動詞]_[對象]
+  --  功能說明: [必須填寫邏輯摘要與處理對象]
+  --  輸入資料: 
+  --  注意事項:
+  --  原設計者: [開發團隊或開發者姓名]
+  --  設立日期: 
+  --  ------------------------ 異動紀錄明細 -------------------------------
+  --  異動日期  異動者     異動說明
+  --
+  */
+  ```
+
+#### 25.8 動態條件與排序 (FilterCondition & SortCondition)
+* **禁止使用 IF 判斷空白**：前端 `dlp-grid` 或 Service 中介層會保證傳入有效的 SQL 語句 (例如無條件時傳入 `1=1`)。因此在 Procedure 內處理 `FilterCondition` 與 `SortCondition` 時，**絕對不可以使用** `IF ... IS NULL THEN` 進行預設值賦值。
+* **預設排序直接附加**：前端 `dlp-grid` 欄位排序傳遞的字串結尾會自帶逗號空白 (例如 `'A.QTY DESC, '`)，若是無排序則為空字串，因此必須在 `ORDER BY` 拼接時，直接把它跟「系統預設排序欄位」串起。
+  ```sql
+  -- 正確寫法：不寫 IF，直接將 SortCondition 串接在預設排序欄位前面
+  vSQLStmt:= '
+      SELECT Row_Number() Over(ORDER BY ' || vParam.SortCondition || ' A.AP070_PAY_YYMM DESC, A.AP070_CURRENCY ) ITEM, A.*
+      FROM ( ... ) A
+      WHERE ' || vParam.FilterCondition;
+  ```
+
+### 26. DLP 前端 Grid 實作規範補充 (Frontend Grid Standards)
+
+#### 26.1 僅允許新增、禁止修改 (Insert Only Editable)
+* 當 `dlp-grid` 中的欄位僅允許使用者在新增資料時輸入，而從資料庫載入的既有資料禁止修改時，**標準寫法為檢查 ITEM 是否為 0** (新增列預設 ITEM 為 0，既有資料大於 0)。
+  ```typescript
+  editable: (params) => {
+    return params.data?.ITEM === 0;
+  }
+  ```
+
+#### 26.2 內嵌 LOV 完整寫法 (Inline LOV Configuration)
+* 針對 `type: EDlpGridColumnType.lov` 的欄位，為確保擴展性與可讀性，**必須**使用強制轉型的 `<IDlpGridLovEditorParams>` 完整寫法。
+* 必須包含欄位對應 `keyMapping`、開窗顯示設定 `colDefs`、參數 `apiParams`、後端程序的完整名稱 `queryAction`、回傳的游標定義 `refCursorKeys` (通常為 `['vInfo', 'vCount']`)，以及啟用輸入檢核 `checkInput: true`。
+  ```typescript
+        cellEditorParams: <IDlpGridLovEditorParams>{
+          keyMapping: {
+            AP070_CURRENCY: 'SD190_CURRENCY_NO',
+          },
+          colDefs: [
+            { headerName: '幣別', field: 'SD190_CURRENCY_NO', type: EDlpGridColumnType.text },
+            { headerName: '名稱', field: 'SD190_CHI_NAME', type: EDlpGridColumnType.text },
+          ],
+          apiParams: this._state.commonApiParams,
+          queryAction: 'PC_API170_LOV_CURRENCY', 
+          refCursorKeys: ['vInfo', 'vCount'],
+          checkInput: true,
+        },
+  ```
