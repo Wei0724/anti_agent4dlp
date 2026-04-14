@@ -14,28 +14,30 @@ description: Oracle Forms to Angular/PLSQL End-to-End Migration Pipeline
 
 請讀取並執行 **`OracleXmlAnalyzer`** Skill 對目標 XML 檔案（例如 `XXX_fmb.xml`）進行深度解析。
 *   **目標**: 產出一份名為 `[Program ID]_xml_analysis.md` 的 Artifact。
-*   **內容要求**: 必須包含 UI 配置 (X/Y 座標, Label)、資料區塊關聯、按鈕觸發器邏輯 (WHEN-BUTTON-PRESSED, POST-QUERY) 及 LOV 定義。
-*   **注意**: 這是整個遷移的 **單一真相來源 (SSOT)**。在執行本步驟前，**必須呼叫 `view_file` 讀取 `OracleXmlAnalyzer` 的 `analysis-report-template.md`** 以確保產出格式正確。在之後的後續步驟中，**嚴禁**再次讀取原始 XML 檔案。
+*   **要求**: 必須包含 UI 配置 (X/Y 座標, Label)、資料區塊關聯、按鈕觸發器邏輯 (WHEN-BUTTON-PRESSED) 及 LOV 定義。
+*   **Excel 偵測**: 必須分析 Program Unit 是否包含 `TEXT_IO` 或 `CHR(9)` 邏輯。若有，必須在分析報告中標註 `[Excel Migration Required: YES]` 及其對應模式 (Pattern A/B/C)。
+*   **注意**: 這是整個遷移的 **單一真相來源 (SSOT)**。在執行本步驟前，**必須呼叫 `view_file` 讀取 `OracleXmlAnalyzer` 的 `analysis-report-template.md`**。
 
 ## Step 2: 後端開發 (Phase II - Backend DDL)
 
-請讀取並遵循 **`DlpBackendSqlStandard`** Skill，依據第一步產出的 `[Program ID]_xml_analysis.md` 建立或修改 PL/SQL Package。
+請讀取並遵循 **`DlpBackendStandard`** Skill，依據第一步產出的 `[Program ID]_xml_analysis.md` 建立或修改 SQL Package 或 C# 代碼。
 *   **目標**: 實作資料查詢、寫入以及 LOV 的後端 SP。
 *   **要求**:
-    - 將 XML 指示的隱藏欄位查詢 (如 POST-QUERY 原理) 整併進主查詢 JOIN 中。
+    - 將 XML 指示的隱藏欄位查詢整併進主查詢 JOIN 中。
     - 套用 `JSON_TABLE` 參數解析。
     - 嚴格實施 `1/-1/-N` 回傳協議並註記中文錯誤訊息。
-*   **關鍵檢索**: 執行本步驟前，**必須呼叫 `view_file` 讀取 `DlpBackendSqlStandard` 的 `templates.sql`**，驗證 `vSQLStmt` 的排序串接邏輯。
+*   **Excel/複雜邏輯 (擴充路徑)**: 若 Step 1 標註為 YES 或有複雜運算需求，則額外遵循 `DlpBackendStandard` 中的 **C# 規範** 與 **`OracleExcelMigration`**，實作 Controller/Service/Repository。
+*   **關鍵檢索**: 執行本步驟前，**必須呼叫 `view_file` 讀取 `DlpBackendStandard` 的 `templates.sql`**。
 
 ## Step 3: 前端骨架建置 (Phase III - Frontend Scaffold)
 
 請讀取並遵循 **`DlpFrontendStandard`** Skill，同樣依據 `[Program ID]_xml_analysis.md` 建置 Angular 前端七大核心檔案 (Component, State, Service, Control, Form Control, HTML, SCSS)。
 *   **目標**: 建立 DLP 標準架構。
 *   **要求**:
-    - 定義 State 管理 (禁止使用 `getRawValue()`)。
-    - 將 Service 中的 ApiService 與後端 SP 綁定。
+    - 定義 State 管理，將 Service 中的 ApiService 與後端 SP 綁定。
     - 實作網格資料綁定 (`getQueryInfo`) 與 LOV Editor 參數串接。
-*   **關鍵檢索**: 執行本步驟前，**必須呼叫 `view_file` 讀取 `DlpFrontendStandard` 的 `component-patterns.ts`**，驗證 `DlpColDef` 是否包含 `type` 屬性。
+*   **Excel 擴充 (Optional)**: 若 Step 1 標註為 YES，則應調用 **`OracleExcelMigration`** Skill 實作 Service 內的 `Blob/JSON` 雙重檢查法，並確保 Controller 回傳正確的檔案流。
+*   **關鍵檢索**: 執行本步驟前，**必須呼叫 `view_file` 讀取 `DlpFrontendStandard` 的 `component-patterns.ts`**。
 
 ## Step 4: UI 精修與排版 (Phase IV - UI Formatting)
 
