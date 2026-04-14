@@ -27,17 +27,31 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
 > [!IMPORTANT]
 > **註冊規範 (Registration Standard)**:
 > 在 `ap.module.ts` 與 `ap-routing.module.ts` 中新增元件時，匯入 (Import) 與宣告 (Declaration/Route) 必須嚴格遵守 **字母排序 (Alphabetical Order)**，並置於正確的區域 (`//#region VNDB` 等)。
+> - **字母排序**: 包含頂部 Import 與陣列清單項，均須按字母排序以減少分支合併衝突。
 
-## 2. 表單配置規範 (Form Configurations)
+## 2. 目錄分層規範 (Layered Directory Standards)
 
-### 2.1 類型映射 (Field Types)
+嚴禁將非組件核心檔案放入元件目錄中，必須根據職責放置於正確層級：
+
+| 目錄職責 | 標準路徑範例 | 內容物範例 |
+| :--- | :--- | :--- |
+| **頁面組件 (View)** | `src/app/views/ca/vn/car110/` | `car110.component.ts/html/scss` |
+| **狀態管理 (State)** | `src/app/views/ca/vn/states/` | `car110.state.ts` |
+| **服務邏輯 (Service)** | `src/app/views/ca/vn/services/` | `car110.service.ts` |
+| **欄位配置 (Controls)** | `src/app/views/ca/vn/controls/` | `car110.control.ts` / `car110-form.control.ts` |
+
+---
+
+## 3. 表單配置規範 (Form Configurations)
+
+### 3.1 類型映射 (Field Types)
 *   **Select**: 用於固定選項 (Local of List)，標誌為 `type: 'select'`。
 *   **LOV**: 用於彈窗開窗查詢，標誌為 `type: 'lov'`。
 *   **Label/Caption**: 
     - `type: 'label'`: 用於靜態文字提示。
     - `type: 'caption'`: 用於警語或備註，可搭配 `textColor: 'red'`。
 
-### 2.2 屬性規範
+### 3.2 屬性規範
 *   **禁止使用非法屬性**：如 `color` (應使用 `textColor`)。
 *   **LOV 設定：DLP Form vs DLP Grid（差異對照）**：
 
@@ -104,9 +118,18 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
 
 *   **寬度分配**：使用 `width` (百分比) 並搭配 `lineBreak()` 與 `blank()` 達成精確排版。
 
-## 3. 資料存取與 State 模式 (Data & State)
+## 4. 資料存取與 API 呼叫模式 (Data & API Patterns)
 
-*   **禁止使用 `getRawValue()`**：應統一使用 `this._state.formRefs.formData` 來取得最新的表單數據（DLP Form 已封裝此屬性）。
+### 4.1 API 呼叫混合模式
+開發者必須根據業務情境，在「通用 SP 呼叫」與「自定義 API 呼叫」之間正確切換。
+
+*   **通用 SP 呼叫** (優先選擇)：對於 80% 的資料處理，應直接使用 `callSpDataSet` 或 `callSp` 呼叫 PL/SQL 包。
+    - **範例**：`this._api.callSpDataSet('PK_XXX.PC_QUERY', <ICallSpDataSetParams>{ payload: {}, refCursorKeys: ['vInfo'] })`
+*   **自定義 API 呼叫** (特殊模式)：僅當涉及 Excel 匯出 (NPOI) 或複雜後端邏輯時，才使用 `callApi` 呼叫 C# Controller。
+    - **範例**：`this._callApi('ExportExcel', payload, { responseType: 'blob' })`
+
+### 4.2 資料存取與 State 規範 (Data & State)
+*   **禁止使用 `getRawValue()`**：應統一使用 `this._state.formRefs.formData` 來取得最新數據（DLP Form 已封裝此屬性）。
 *   **State 初始化 (Instantiation)**：
     - **禁止**在屬性定義時使用 `new` 或帶入泛型（如 `public formRefs: DlpFormRefs<T> = ...`）。
     - 必須在 `init()` 方法中進行實例化：`this.formRefs = new DlpFormRefs();`。
@@ -114,9 +137,9 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
     - 在 `Service.initUserContext()` 取得全域資訊後，必須調用 `this._state.formRefs.patchValue()` 同步至 UI 顯示。
     - **禁止**直接從 `commonApiParams` 讀取 `userCompanyNo`（應透過後端 `PC_XXX_INIT_DATA` 查詢）。
 *   **User Context 預載判定**: 
-    - 應檢查 Oracle Forms XML 的 `WHEN-NEW-FORM-INSTANCE` 觸發器。若其中包含查詢使用者資訊或權限的 Logic，才需實作 `Service.initUserContext()`。若無，則應直接執行初始查詢。
+    - 應檢查 Oracle Forms XML 的 `WHEN-NEW-FORM-INSTANCE` 觸發器。若其中包含查詢使用者資訊或權限的 Logic，才需實作 `Service.initUserContext()`。若無，則應執行初始查詢。
 
-## 4. Service 實作標準 (Service Patterns)
+## 5. Service 實作標準 (Service Patterns)
 
 *   **回傳類型**：Service 方法通常回傳 `void`。
 *   **Controller 職責**：
@@ -140,7 +163,7 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
         - 系統嚴重錯誤 (如：ORA 報錯)：使用 `showError()`。
         - 訊息內容應與 Oracle Forms 原始提示一致。
 
-## 5. Grid 與 Component 串接規範 (Grid Integration)
+## 6. Grid 與 Component 串接規範 (Grid Integration)
 
 *   **`getQueryInfo` 模式**: 
     在 `Component` 設定 `gridConfig` 時，網格的資料來源「必須」透過宣告 `getQueryInfo` 來綁定後端 SP。**底層會自動帶入網格的查詢參數 (`filters`) 與分頁參數，開發者僅需定義額外的業務參數或 SP 名稱。**
@@ -273,7 +296,7 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
     3. **Service**: 呼叫 `MatDialog.open(CustomizeModelDialogComponent, { data: { templates: ... } })` 開啟。
     4. **觸發**: 彈窗內部的網格應由彈窗機制自動觸發查詢，不須手動呼叫 `executeQueryByInfo`。
 
-### 5.2 網格 HTML 宣告與事件綁定 (Grid HTML & Events)
+### 6.2 網格 HTML 宣告與事件綁定 (Grid HTML & Events)
 
 *   **元件標籤**: 必須使用專案標準的 `<dlp-grid>` 與 `<dlp-form>` 標籤（**禁止**使用 `<app-dlp-grid>`、`<app-dlp-form>` 或被遺棄的舊寫法）。
 *   **不要包裹不必要的卡片元件**: 除非特殊排版需要，否則不需要將 `<dlp-grid>` 包裹在 `<mat-card>` 與 `<div class="dlp-content-fluid">` 內。若要有標題，請使用專案統一的標題 Directive，例如: `<div dlp-comp-title>{{ '我的標題' | translate }}</div>`。
@@ -299,11 +322,11 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
     </dlp-grid>
     ```
 
-## 6. 網格新刪修規範 (Grid CRUD Patterns)
+## 7. 網格新刪修規範 (Grid CRUD Patterns)
 
 為了發揮 DLP Grid 的底層特性並確保資料操作的原子性，應遵循以下「拆分模式」：
 
-### 6.1 事件與 Service 方法對照
+### 7.1 事件與 Service 方法對照
 *   **批量儲存 (新增與更新)**：
     - **事件**: `(save)="onSave($event)"` (類型: `DlpGridSaveEvent`)。
     - **Service 調用**: 使用 `gridRefs.executeUpsert(spName, { payload: { UpsertData: ... }, hasVarchar2Result: true })`。
@@ -313,16 +336,17 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
     - **Service 調用**: 使用 `gridRefs.executeDelete(spName, { payload: { ...keys }, hasVarchar2Result: true })`。
     - **重要控管**: 在 Component 中應檢查 `if (!$event.isInsertRow)`，確報僅對已存檔的「舊資料」發動後端請求；剛新增尚未存檔的行（isInsertRow 為 true）僅需底層 UI 抽離即可。
 
-### 6.2 複合主鍵處理
-若資料表為複合主鍵（如 `MP081`），在 `executeDelete` 的 `payload` 中必須包含完整的主鍵欄位，不可僅傳送 `ROWID`，以確保業務邏輯的嚴謹性。
+### 7.2 複合主鍵處理
+若資料表為複合主鍵（如 `MP081`），在 `executeDelete` 的 `payload` 中必須包含完整的主鍵欄位，不可僅傳送 `ROWID`，以確保業務邏輯的嚴緊性。
 
-## 7. 避雷檢查清單 (Anti-Regression Checklist)
+## 8. 避雷檢查清單 (Anti-Regression Checklist)
 - [ ] **HTML 屬性**：檢查是否誤用了 `[gridConfig]`？ (❌ 禁止，應統一使用 `[gridRefs]`)
-- [ ] **HTML 標籤**：檢查是否誤用了 `<app-dlp-grid>`？ (❌ 禁止，應使用標準 `<dlp-grid>`)
+- [ ] **HTML 標籤**：檢查是否誤用了 `<app-dlp-grid>`？ (❌ 禁止，應使用標准 `<dlp-grid>`)
 - [ ] **State 取得**：檢查是否使用了 `getRawValue()`？ (❌ 禁止，應使用 `formRefs.formData`)
 - [ ] **LOV 欄位**：`keyMapping` 是否與後端回傳格式一致？
 - [ ] **按鈕動作**：點擊後是否有執行 `patchValue` 或 `refresh`？
-## 7. 參考範例 (Reference Implementations - Source of Truth)
+
+## 9. 參考範例 (Reference Implementations - Source of Truth)
 *   **Form 配置**: [apu030-form.control.ts](file:///D:/dlp-develop/DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/ap/vn/controls/apu030-form.control.ts)
 *   **Grid 配置**: [apu030.control.ts](file:///D:/dlp-develop/DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/ap/vn/controls/apu030.control.ts)
 *   **Service 邏輯**: [apu030.service.ts](file:///D:/dlp-develop/DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/ap/vn/services/apu030.service.ts)

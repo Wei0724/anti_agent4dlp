@@ -45,4 +45,13 @@ description: Oracle Forms to Angular/PLSQL End-to-End Migration Pipeline
     - 確保 `Service.initUserContext()` 有透過 `patchValue` 更新顯示。
 
 ---
+
+> [!TIP]
+> **特殊場景：Excel 匯出遷移 (Excel Export Migration)**
+> 若分析報告指出該模組的核心功能為產出 Excel 報表（對應原 Forms 的 `CALL_EXCEL` 邏輯）：
+> 1.  **Step 2 (後端)**：除 SQL 外，必須額外生成 **C# Repository** 中的 NPOI 佈局邏輯。
+> 2.  **Step 3 (前端)**：專注於 `Blob` 接收與下載處理，而非標準網格維護。
+> 3.  **參考規範**：請務必加掛並遵循 **`DlpExcelExportStandard`** Skill。
+
+---
 *當使用者要求「執行 Oracle 遷移 Pipeline」或輸入 `/oracle-migration` 時，請嚴格按照此 1-2-3-4 步驟依序執行產出。*

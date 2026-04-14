@@ -20,12 +20,9 @@
       - 提供足夠的上下文確保操作的精準性
     - **驗證 (Verify):** 變更完成後，您應主動思考如何驗證變更的正確性。由於本專案缺乏自動化測試，這通常意味著您需要重新檢視程式碼，或詢問使用者是否有手動驗證的步驟。
 
-3.  **遵守慣例 (Adherence to Conventions):** 本文件 (`.antigravity`) 以及 `SKILLS/` 目錄中的所有文件，都是您必須遵守的最高準則。**若本文件與 `SKILLS/` 內容有衝突，應以 `SKILLS/` 目錄下的文件為最終依據 (Source of Truth)。**
+3.  **遵守慣例 (Adherence to Conventions):** 本文件 (`BasePrompt.md`) 中描述的所有架構、模式和慣例，都是您必須遵守的最高準則。在進行任何修改前，都應反覆確認是否符合文件精神。
 
-4.  **檔案結構與定位 (File Placement):** 
-    - 前端新功能統一放置於 `views/[模組]/[地區]/[功能ID]/` 下，**嚴禁** 建立額外的 `pages/` 子目錄夾層。
-    - 後端 PKG 檔案命名為 `PK_[模組]_[功能ID].sql`。
-
+4.  **文件閱讀策略 (Document Reading Strategy):** 本文件包含專案的核心架構、開發慣例、技術棧說明等關鍵資訊。根據任務複雜度,採用適當的閱讀策略:
 
     **📊 分級閱讀策略**:
     - **🔴 P0 - 必讀核心** (開始任何任務前):
@@ -101,12 +98,13 @@
     - **前端命名與結構強制規則**:
       - **檔案命名**: 所有前端功能檔案（Component, State, Service, Control）必須使用全小寫 kebab-case，且前綴必須與「功能代碼」完全一致（如 `pmb040.state.ts`）。
       - **類別命名**: 類別名稱必須使用 PascalCase，並以其職責結尾（格式：`[功能代碼]Component`, `[功能代碼]State`, `[功能代碼]Service`, `[功能代碼]Control`）。
-      - **目錄結構**: 每一項功能必須在地區資料夾下建立獨立子資料夾，資料夾名稱為全小寫「功能代碼」（如 `views/pm/vn/pmb040/`）。此目錄下直接放置 7 個核心檔案，**嚴禁** 額外建立 `pages/` 子目錄。
+      - **目錄結構**: 每一項功能必須在地區資料夾下建立獨立子資料夾，資料夾名稱為全小寫「功能代碼」（如 `views/pm/vn/pmb040/`）。
       - **Module 註冊**: 在 `Module` 中引用 Component 時，必須使用 `as` 加上「地區別名」（格式：`[功能代碼][地區小寫]Component`），並在 `declarations` 與 `routing` 中使用此別名。
       - **Selector 命名**: `Component` 的 `selector` 必須統一使用 `app-[功能代碼小寫]`。
       - **Control 配置**: 所有的 Grid 與 Form 欄位定義配置，必須在類別中使用 `public get` 唯讀屬性暴露。
       - **HTML 視圖結構強制規則**:
         - **佈局組件強制規則**: 頁面最外層或核心佈局必須使用 `<resize-layout>`，嚴禁使用 `<table>` 或自定義 `flex/float` 進行區塊佈局。
+          - **Resize Layout 實作強制規範**：若使用 `<resize-layout>`，`component.ts` 必須同步實作以下結構：
             1. **變數宣告強制規則**：
                - 必須且僅允許宣告單一變數：`@ViewChildren(ResizeLayoutTemplateDirective) resizeLayoutTemplates!: QueryList<ResizeLayoutTemplateDirective>;`
                - **變數名稱必須為** `resizeLayoutTemplates`。
@@ -114,8 +112,6 @@
                - **嚴禁**拆分為 `private QueryList` 搭配 `public array`。
             2. 必須實作 `AfterViewInit` 生命週期勾點 (Lifecycle Hook)。
             3. 必須在 `ngAfterViewInit` 中將 `@ViewChildren` 抓取到的 `QueryList` 實體，正確轉換並賦值給 `State` 內的 `layoutRefs.templates` 配置。
-            4. **資料夾定位**：元件檔案必須直接位於 `[地區]/[功能ID]/` 目錄下。
-
         - **內容掛載**: 所有內容必須定義在 `<ng-template>` 中，並搭配 `resizeLayoutTemplate` 或 `appTabTemplate` 指令進行註冊。
         - **元件選用**: 查詢條件、按鈕、摘要欄位必須使用 `<dlp-form>`；數據網格必須使用 `<dlp-grid>`。
         - **標籤限制**: 嚴禁在 HTML 直寫 `<input>`, `<select>`, `<button>`，所有互動必須經由 `dlp-` 元件。
@@ -281,14 +277,14 @@
 📋 任務類型判斷
 │
 ├─ 🆕 新增功能
-│  ├─ 涉及 dlp-grid? → 📖 參照 SKILLS/DlpFrontendStandard + § 6.2 DPI580DG
-│  ├─ 涉及 dlp-form? → 📖 參照 SKILLS/DlpFrontendStandard + § 6.3 FXR050DG
+│  ├─ 涉及 dlp-grid? → 📖 參照 § 6.2 DPI580DG
+│  ├─ 涉及 dlp-form? → 📖 參照 § 6.3 FXR050DG
 │  └─ 兩者都有?     → 📖 參照 § 6.4 DPI999DG
 │
 ├─ 🔧 修改現有功能
-│  ├─ 前端修改? → 🔍 搜尋元件名稱 → 讀取 State/Control/Service (路徑：views/[module]/[region]/[ID]/)
+│  ├─ 前端修改? → 🔍 搜尋元件名稱 → 讀取 State/Control/Service
 │  ├─ 後端修改? → 🔍 搜尋 Controller/Service 名稱
-│  └─ 資料庫修改? → 🔍 搜尋 PK_[模組]_[程式名] PKG (註解請參照 SKILLS/DlpBackendSqlStandard)
+│  └─ 資料庫修改? → 🔍 搜尋 PK_[模組]_[程式名] PKG
 │
 ├─ 🐛 問題診斷
 │  ├─ 資料流追蹤? → 📖 參照 § 8 問題診斷方法論
@@ -427,20 +423,17 @@
 **✅ AI 必須遵循的路徑規範**：
 
 ```
-Correct Project Structure:
-DLP-DEVELOP/                           ← Project Root
+正確的專案結構：
+DLP-DEVELOP/                           ← 專案根目錄（絕對不要在此建立 src）
 ├── DLP.Web/
 │   └── DLP.Web.AppPortal/
-│       └── ClientApp/                 ← Frontend AppRoot
-│           └── src/
+│       └── ClientApp/                 ← 前端專案根目錄
+│           └── src/                   ← 正確的 src 位置
 │               └── app/
 │                   └── views/
-│                       └── [Module]/
-│                           └── [Region]/
-│                               ├── [ProgramID]/       ← Standard Structure (NO "pages/" folder)
-│                               │   ├── [ID].component.ts
-│                               │   ├── [ID].state.ts
-│                               │   └── ...
+│                       └── [模組]/
+│                           └── [地區]/
+│                               ├── pages/[程式名稱]/  ← 新程式結構
 │                               ├── controls/
 │                               ├── services/
 │                               └── states/
@@ -462,9 +455,9 @@ DLP-DEVELOP/                           ← Project Root
    ```
 
 3. **檔案結構對應**：
-   - 所有程式：`[地區]/[程式名稱]/` （如 `vn/clq080/`）
-   - **嚴禁使用 `pages/` 子目錄夾層**
-   - 舊程式若存在於不同結構，維持原樣，但新開發嚴禁比照舊有錯誤結構。
+   - 新程式：`pages/[程式名稱]/` （如 CLQ080）
+   - 舊程式：直接在地區目錄下 （如 CLQ205）
+   - **不可混用結構**
 
 **⚠️ AI 檢查清單**：
 
@@ -502,7 +495,7 @@ this._state.cl040GridRefs.executeDelete("PK_CL_CLQ080.PC_CLQ080_DELETE_CL040", {
   refCursorKeys: ["vResult"],
   resultCode: (result: any) => result?.dsResult?.Table[0]?.RESULT,
   response: (res: any) => {
-    if (res.resCode != '1') {
+    if (res.resCode != "0") {
       this._notificationService.showWarning(
         "刪除失敗：有對應的明細資料，請先刪除明細資料。",
       );
@@ -522,7 +515,7 @@ public deleteCl040 = ($event: DlpGridDeleteRowEvent): void => {
     refCursorKeys: ['vResult'],
     resultCode: (result: any) => result?.dsResult?.Table[0]?.RESULT,
     response: (res: any) => {
-      if (res.resCode != '1') {
+      if (res.resCode != '0') {
         this._notificationService.showWarning('刪除失敗：有對應的明細資料，請先刪除明細資料。');
       }
     },
@@ -837,16 +830,11 @@ public getCl050QueryInfo = (): IDlpGridQueryInfo => {
 ```typescript
 // ✅ 標準錯誤處理模式
 response: (res: any) => {
-  if (res.resCode != '1') {
-    this._notificationService.showWarning("具體中文錯誤訊息");
+  if (res.resCode != "0") {
+    // 注意：成功是 '0'
+    this._notificationService.showWarning("具體錯誤訊息");
   }
 };
-
-// ✅ Dataset 映射規則 (Table Mapping)
-// 當使用 callSpDataSet 且後端開啟多個游標時，前端接收到的 Dataset 鍵值固定依照順序：
-// Table (第1個 - 通常是資料), Table1 (第2個 - 通常是總筆數), Table2 (第3個)
-const totalCount = res.dsResult?.Table1?.[0]?.TOTAL_COUNT;
-
 ```
 
 ### 2.1.6 AI 綜合開發檢查清單 (AI Comprehensive Development Checklist)
@@ -867,8 +855,7 @@ const totalCount = res.dsResult?.Table1?.[0]?.TOTAL_COUNT;
 
 - [ ] **路徑確認**: 已確認新檔案的目標路徑 (`DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/...`) 是否正確。
 - [ ] **模組確認**: 已確認目標模組 (e.g., `wo`, `dp`) 和地區代碼 (e.g., `dg`, `vn`) 是否存在且正確。
-- [ ] **檔案結構**: 確認新程式直接位於 `[地區]/[功能ID]/` 下，**嚴禁**建立 `pages/` 資料夾。
-
+- [ ] **檔案結構**: 確認新程式遵循 `pages/[程式名稱]/` 的標準結構。
 
 ---
 
@@ -888,25 +875,25 @@ const totalCount = res.dsResult?.Table1?.[0]?.TOTAL_COUNT;
   - [ ] 確認主從 `grid` 聯動時，明細查詢有使用主表外鍵，並在主表查詢前清空明細。
 - [ ] **API 呼叫**:
   - [ ] 確認刪除操作使用 `executeDelete` 方法，而非通用的 `callStoreProcedureDataSet`。
-  - [ ] 確認錯誤處理 `response` 回呼中，是檢查 `res.resCode != '1'`。
+  - [ ] 確認錯誤處理 `response` 回呼中，是檢查 `res.resCode != '0'`。
 
 **後端 & 資料庫 (Backend & Database)**
 
 - [ ] **PKG 結構**:
-  - [ ] **Spec 簽章**: 確認 Package Specification **禁止包含任何註解**，僅宣告簽章。
-  - [ ] **單一檔案**: 確認 PKG 檔案為包含 Specification 和 Body 的單一檔案。
-  - [ ] **命名規範**: PKG 命名 (`PK_[MODULE]_[PROGRAM_CODE]`) 和程序命名 (`PC_[PROGRAM_CODE]_[ACTION]_[TABLE]`) 符合規範。
-- [ ] **註解區塊強制規範**:
-  - [ ] **分隔線**: 使用 `/* ` 加上 **76 個虛線** (`----------------------------------------------------------------------------`)。
-  - [ ] **對齊**: 所有內容行開頭必須為 **`--   `** (雙橫線後接三個空格)。
-  - [ ] **欄位留空**: `輸入資料:` 與 `注意事項:` 欄位 **必須保持空值** (Empty)。
-  - [ ] **異動紀錄**: 必須包含異動日期、異動者、異動說明。
+  - [ ] 確認 PKG 檔案為包含 Specification 和 Body 的單一檔案。
+  - [ ] 確認 PKG 檔案路徑的地區代碼與前端路徑一致。
+  - [ ] 確認 PKG 命名 (`PK_[MODULE]_[PROGRAM_CODE]`) 和程序命名 (`PC_[PROGRAM_CODE]_[ACTION]_[TABLE]`) 符合規範。
 - [ ] **PKG 邏輯**:
   - [ ] 確認查詢包含 `vResult` 和 `vCount` 兩個 `OUT SYS_REFCURSOR`。
-  - [ ] 確認分頁邏輯使用 `Row_Number()` 並搭配 `vSQLStmt` 共用變數。
-  - [ ] 確認 `SQLERRM` **禁止直接寫在 SELECT 中**（必須先賦值給區域變數）。
-  - [ ] 業務阻擋回傳負數代碼 (`'-2'`, `'-3'`)，且 **禁止在 RES_MSG 回傳中文**（訊息附在 SQL 註解中）。
-
+  - [ ] 確認分頁邏輯完全複製 `DPI580DG` 的 `Row_Number()` 模式。
+  - **確認使用 `vSQLStmt` 共用變數**，同時用於 `vResult` (分頁) 與 `vCount` (總數) 查詢，避免邏輯不一致。
+  - **確認 `SortCondition` 與 `FilterCondition` 不使用 `NVL` 包裹**，直接拼接到 `vSQLStmt` 中。
+  - **確認 `JSON_TABLE` 的 `PATH` 定義不包含 `payload.` 前綴**。
+  - 確認參數使用 `vJson CLOB` 承載模式。
+  - 確認程序中**沒有** `EXCEPTION` 錯誤處理區塊。
+- [ ] **命名與註解**:
+  - [ ] 確認變數命名符合 `vResult`, `vCount`, `vParamsObj` 等標準。
+  - [ ] 確認檔案與程序註解格式、內容 (特別是設立日期) 均符合規範。
 
 ---
 
@@ -1093,15 +1080,18 @@ public getCl040QueryInfo = (): IDlpGridQueryInfo => {
 **PKG格式嚴格遵循**
 
 ```sql
--- ✅ 正確方案：使用 NVL 處理預設排序，確保分頁穩定性
+-- ✅ DPI580標準格式：直接使用參數
 vSQLStmt := '
     SELECT
-        Row_Number() Over (ORDER BY ' || NVL(vParams.SortCondition, ' ') || ' [主鍵欄位]) ITEM
+        Row_Number() Over (ORDER BY ' || vParams.SortCondition || ' [主鍵欄位]) ITEM
         ,A.*
     FROM (
         SELECT [需要的欄位] FROM [表名] WHERE 1=1
     ) A
     WHERE ' || vParams.FilterCondition;
+
+-- ❌ 錯誤：自創NVL處理（DPI580沒有此模式）
+vSQLStmt := 'ORDER BY ' || NVL(vParams.SortCondition, '[主鍵欄位]');
 ```
 
 **Grid欄位配置嚴格遵循**
@@ -1110,8 +1100,8 @@ vSQLStmt := '
 // ✅ 簡潔配置，權限由gridConfig統一控制
 { field: 'FIELD_NAME', headerName: '欄位名稱', sortable: true }
 
-// ✅ Select 欄位必須加上此屬性，否則無法點擊編輯
-{ field: 'TYPE', headerName: '類型', type: EDlpGridColumnType.select, cellRendererEditable: true }
+// ❌ 錯誤：添加參考程式沒有的屬性
+{ field: 'FIELD_NAME', headerName: '欄位名稱', editable: false, hide: false }
 ```
 
 **重要原則：寧可缺少功能，也不要自創格式！**
@@ -1995,7 +1985,7 @@ export class YourPageComponent implements OnInit {
 
     ```sql
     BEGIN
-      vResult := '1'; -- 最新規範成功代碼為 '1'
+      vResult := '0'; -- 預設成功代碼為 '0' (注意：此模式成功通常為 '0')
 
       -- ... DML 邏輯 ...
       UPDATE ...;
@@ -2014,10 +2004,10 @@ export class YourPageComponent implements OnInit {
       payload: { ... }
     }).subscribe({
       next: (res: any) => {
-        if (res.resCode === '1') {
+        if (res.resCode === '0') {
           this._notificationService.showSuccess('更新成功');
         } else {
-          // resCode 不為 '1' 時，顯示後端回傳的錯誤訊息 (resMsg)
+          // resCode 不為 '0' 時，顯示後端回傳的錯誤訊息 (resMsg)
           this._notificationService.showError(res.resMsg || '更新失敗');
         }
       }
