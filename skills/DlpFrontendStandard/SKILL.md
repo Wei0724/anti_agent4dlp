@@ -54,6 +54,10 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
 ### 3.2 屬性規範
 *   **禁止使用非法屬性**：如 `color` (應使用 `textColor`)。
 *   **LOV 設定：DLP Form vs DLP Grid（差異對照）**：
+    
+    > [!IMPORTANT]
+    > **LOV 調用核心原則**:
+    > **除非涉及 Excel 下載，否則 LOV 必須使用 Direct SP 模式 (CallStoreProcedureDataSet) 直接對接 SQL。** 嚴禁在此類場景下建立自定義的 C# API。
 
     | 特性 | DLP Form LOV | DLP Grid LOV |
     |---|---|---|
@@ -120,12 +124,15 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
 
 ## 4. 資料存取與 API 呼叫模式 (Data & API Patterns)
 
-### 4.1 API 呼叫混合模式
-開發者必須根據業務情境，在「通用 SP 呼叫」與「自定義 API 呼叫」之間正確切換。
+### 4.1 API 呼叫優先序 (API Priority)
 
-*   **通用 SP 呼叫** (優先選擇)：對於 80% 的資料處理，應直接使用 `callSpDataSet` 或 `callSp` 呼叫 PL/SQL 包。
+開發者必須優先選擇「Direct SP 模式」，僅在極少數例外情況下才使用 C# API。
+
+*   **通用 SP 呼叫 (唯一標準模式)**：除了 Excel 匯出外，所有資料處理應直接呼叫 PL/SQL 包。
+    - **屬性**: 使用 `queryAction` (SP 名稱) 指向模式。
+    - **類型**: `CallStoreProcedureDataSet` 或 `CallStoreProcedure`。
     - **範例**：`this._api.callSpDataSet('PK_XXX.PC_QUERY', <ICallSpDataSetParams>{ payload: {}, refCursorKeys: ['vInfo'] })`
-*   **自定義 API 呼叫** (特殊模式)：僅當涉及 Excel 匯出 (NPOI) 或複雜後端邏輯時，才使用 `callApi` 呼叫 C# Controller。
+*   **自定義 API 呼叫 (僅限 Excel)**：**僅** 當涉及 Excel 匯出 (NPOI NPOI 排版邏輯) 時，才使用 `callApi` 呼叫 C# Controller。
     - **範例**：`this._callApi('ExportExcel', payload, { responseType: 'blob' })`
 
 ### 4.2 資料存取與 State 規範 (Data & State)
