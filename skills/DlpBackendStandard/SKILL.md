@@ -31,8 +31,8 @@ description: DLP 專案後端開發總綱，涵蓋 SQL (直連預設) 與 C# (Ex
 --   名稱: [Procedure/Function Name]
 --   功能說明: [Description]
 --   輸入資料: 
---   注意事項: 
---   原設計者: [Author Name]
+--   注意事項: (標籤後必須保持空白，不可填寫文字)
+--   原設計者: WEI_PAN
 --   設立日期: [YYYY/MM/DD]
 --   ------------------------ 異動紀錄明細 ---------------------------------
 --  異動日期  異動者    異動說明
@@ -43,6 +43,22 @@ description: DLP 專案後端開發總綱，涵蓋 SQL (直連預設) 與 C# (Ex
 *   **成功**: `RES_CODE = '1'`。
 *   **系統異常**: `RES_CODE = '-1'`, `RES_MSG = SQLERRM` (必須先賦值給變數，禁止直接在 SELECT 中使用 SQLERRM)。
 *   **業務阻擋**: 使用負數代碼 (`'-2'`, `'-3'`)，**禁止**回傳中文訊息，但必須在 SQL 代碼旁邊以註解標註。
+
+### 5. LOV 程序標準寫法 (LOV Standard)
+為了支援前端開窗元件的分頁、過濾與排序，LOV 程序必須遵守以下動態 SQL 範式：
+*   **參數規範**: 強制包含 `vCount OUT SYS_REFCURSOR`。
+*   **JSON 解析**: 必須解析 `StartRow`, `EndRow`, `FilterCondition`, `SortCondition` 等參數。
+*   **動態 SQL 構建**:
+    ```sql
+    vSQLStmt := '
+        SELECT Row_Number() Over (ORDER BY ' || vParams.SortCondition || ' A.DEFAULT_COL) ITEM, A.*
+        FROM ( [你的核心查詢語句] ) A
+        WHERE ' || NVL(vParams.FilterCondition, '1=1');
+    ```
+*   **雙游標回傳**:
+    *   `vInfo`: `SELECT A.* FROM ( ' || vSQLStmt || ' ) A WHERE A.ITEM >= ...`
+    *   `vCount`: `SELECT COUNT(*) TOTAL_COUNT FROM ( ' || vSQLStmt || ' )`
+*   **別名規範**: 欄位別名強制**大寫**（如 `VALUE`, `LABEL`），以匹配前端配置。
 
 ---
 
@@ -72,8 +88,13 @@ description: DLP 專案後端開發總綱，涵蓋 SQL (直連預設) 與 C# (Ex
 - [ ] **命名檢查**：C# Repository 是否已對應資料表而非功能 ID？
 - [ ] **註解清理**：C# 檔案頭部是否已移除所有區塊註解？
 - [ ] **SQL 錯誤代碼**：阻擋邏輯是否採用負數代碼且**附上 SQL 中文註解**？
+- [ ] **LOV 參數完整性**：程序是否包含 `vCount` 且回傳了 `TOTAL_COUNT`？
+- [ ] **LOV 動態分頁**：是否使用了 `Row_Number()` 與動態 `vSQLStmt` 模式？
+- [ ] **欄位別名大寫**：所有回傳給前端的別名（尤其 LOV）是否皆為大寫？
 - [ ] **分頁穩定性**：`vSQLStmt` 是否將預設排序欄位串接在 `SortCondition` 之後？
 - [ ] **SQLERRM 賦值**：是否已避開在 SELECT 中直接調用 SQLERRM？
+- [ ] **註解對齊**：`輸入資料` 與 `注意事項` 標籤後是否已保持空白？
+- [ ] **防邏輯誤刪**：增補子程序時，是否確認未覆蓋或誤刪 Body 中既有的私有程序？
 
 ---
 

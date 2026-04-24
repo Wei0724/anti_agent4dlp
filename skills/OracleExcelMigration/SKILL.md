@@ -92,7 +92,7 @@ public callExcel = (): void => {
 
   this._loader.open();
 
-  this._api.callApi('ExportExcel', payloadData, { responseType: 'blob' })
+  this._api.callApi('Module', 'ProgramID', 'ExportExcel', payloadData, { responseType: 'blob' })
     .subscribe((result) => {
       this._loader.close();
 

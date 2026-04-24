@@ -13,13 +13,23 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
 > 1. [資源範本：元件配置模式 (resources/component-patterns.ts)](resources/component-patterns.ts)
 > 2. [資源範本：LOV 配置對照表 (resources/lov-config-reference.md)](resources/lov-config-reference.md)
 > 3. [標竿範例：apu030.control.ts](file:///D:/dlp-develop/DLP.Web/DLP.Web.AppPortal/ClientApp/src/app/views/ap/vn/controls/apu030.control.ts)
-> **未執行讀取動作即產出代碼將視為任務失敗。**
+> 
+> **嚴格防幻覺守則 (Anti-Hallucination Rule)：**
+> - **絕對禁止憑空捏造屬性與路徑**：所有元件配置（特別是 Grid/Form 中的 Button、Radio、Select、LOV 等）與 **Import 導入語句**，**必須 100% 複製 `component-patterns.ts` 或標竿範例內的設定結構**。
+> - **未知則問 (Ask when unknown)**：若在 `component-patterns.ts` 找不到對應的 Service 路徑或屬性定義，且無法透過 `view_file` 驗證其存在，**AI 必須停止作業並主動詢問使用者**，禁止任何形式的盲目猜測！
+> - 未執行讀取動作或是未參照上述資源檔而盲目猜測（如發明 `@services/` 路徑、或是捏造不存在於 DlpForm 的 `color` 屬性），將視為嚴重任務違規！
 
 ## 0. 避雷檢查清單 (Quick Checkpoints)
+- [ ] **導入路徑 (Import Paths)**：是否使用了 `component-patterns.ts` 內的標準模板？(❌ 禁止憑空猜測路徑，如無法確定且資源檔未載明，**必須詢問使用者**)
+- [ ] **表單型態 (Form Type)**：`DlpFieldConfigurationsType` 是否誤用了 `EDlpFormFieldType` 枚舉？(❌ 禁止，應直接使用字串常數如 `'lov'`, `'text'` 等)
+- [ ] **選項綁定 (Options)**：Radio 或 Select 欄位是否正確使用了 `options$` (Observable) 且帶有 `defaultValue`？ (❌ 禁止，不要誤用 `selectableOptions`)
+- [ ] **按鈕屬性 (Button)**：Form 中的按鈕是否誤用了 `color` 屬性？ (❌ 禁止，請使用 `icon` 或 `width` 來調整，DLP Form 不支援直接設定 Material color)
 - [ ] **欄位型態 (Type)**：`DlpColDef` 是否為每個欄位定義了 `type: EDlpGridColumnType`？(否則篩選器會失效)
 - [ ] **HTML 標籤**：是否誤用了 `<app-dlp-grid>`？ (❌ 禁止，應使用 `<dlp-grid>`)
 - [ ] **HTML 屬性**：是否誤用了 `[gridConfig]`？ (❌ 禁止，應統一使用 `[gridRefs]`)
 - [ ] **State 取得**：是否使用了 `getRawValue()`？ (❌ 禁止，應使用 `formRefs.formData`)
+- [ ] **SP 調用簽章 (API Signature)**：`callSpDataSet` 是否正確組合了 `<ICallSpDataSetParams>` 並帶有完整的 Package 名稱 (如 `PK_XX...`)？ (❌ 禁止直接傳入 `{}` 或未附帶 Package 名稱)
+- [ ] **網格查詢觸發 (Grid Query)**：呼叫 `executeQueryByInfo()` 時是否誤傳了參數？ (❌ 禁止傳入參數，應在 Component 的 `getQueryInfo` 內完成宣告)
 - [ ] **命名規範**：State 注入名稱是否包含描述性 ID (如 `_apu010`)？
 
 ## 目錄 (Table of Contents)
@@ -92,8 +102,8 @@ description: DLP 專案前端開發之程式碼結構、State 管理及元件配
 *   **回傳類型**：Service 方法通常回傳 `void`。
 *   **Controller 職責**：
     1. 從 State 讀取參數。
-    2. 調用 `ApiService.callSpDataSet`。
-    3. 在 `subscribe` 中處理結果並寫回 State（如：`gridRefs.executeQueryByInfo()`）。
+    2. 調用 `ApiService.callSpDataSet`。**警告：必須傳入包含完整 Package 的名稱 (如 'PK_CA_CAR110USD.PC_XX')，並斷言為 `<ICallSpDataSetParams>` 以確立 `payload` 與 `refCursorKeys`。**
+    3. 在 `subscribe` 中處理結果並寫回 State（如：無參數調用 `gridRefs.executeQueryByInfo()`）。
 *   **錯誤處理**：
     - **禁止**在 `RES_MSG` 中回傳中文（由前端依據代碼轉換）。
     - **不使用輔助函式**：保持 switch 邏輯在 subscribe 內以符合專案標準。

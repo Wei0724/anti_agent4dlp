@@ -1,4 +1,4 @@
-import { EDlpGridColumnType, IDlpGridLovEditorParams, IDlpGridSelectableOption } from '@ag-grid-community/core';
+import { EDlpGridColumnType, IDlpGridLovEditorParams, IDlpGridSelectableOption } from 'dlp-shared-datagrid';
 import { of } from 'rxjs';
 
 /** 
@@ -25,6 +25,30 @@ export const FORM_LOV_SAMPLE = {
     FACTORY_NAME: 'SD140_NAME_ABE'
   }
   // onChange: () => {} // 有後續動作時使用
+};
+
+// 1.5. DLP Form Radio / Options 範例
+export const FORM_RADIO_SAMPLE = {
+  key: 'REPORT_TYPE',
+  type: 'radio',   // 或者 'select'
+  label: '報表類型',
+  width: 20,
+  defaultValue: 'PREVIEW',
+  options$: of([   // ❌ 注意：Form 中絕對不可使用 selectableOptions
+    { value: 'PREVIEW', label: '檢核表' },
+    { value: 'IN_DUE_FORM', label: '正式' }
+  ])
+};
+
+// 1.6. DLP Form Button 範例
+export const FORM_BUTTON_SAMPLE = {
+  text: '執行',
+  type: 'button',
+  icon: 'play_arrow', // ❌ 注意：Form 的 button 沒有 color 屬性，請使用 icon 輔助
+  width: 10,
+  onClick: () => {
+    // 按鈕動作邏輯
+  }
 };
 
 // 2. DLP Grid LOV 範例（屬性包在 cellEditorParams 內，使用 onCellValueChanged）
@@ -128,3 +152,49 @@ export const GRID_HTML_SAMPLE = `
   (rowSelected)="onAp100GridRowSelected($event)">
 </dlp-grid>
 `;
+
+// 9. 標準導入模板 (Standard Import Templates)
+// 當無法確定路徑時，請務必先參考此處或詢問使用者，絕對禁止憑空猜測路徑。
+
+/** 
+ * ### A. Service 常用導入
+ */
+/*
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { SharedApi } from 'app/shared/api/shared.api';
+import { AppLoaderService } from 'dlp-shared-components';
+import { 
+  ApiService, 
+  ICallSpDataSetParams, 
+  NotificationService, 
+  PubFunctionService, 
+  WebHandleService 
+} from 'dlp-shared-services';
+import { isEmptyValue } from 'dlp-shared-utils';
+import { XXXState } from '../states/xxx.state';
+*/
+
+/** 
+ * ### B. State 常用導入
+ */
+/*
+import { Injectable } from '@angular/core';
+import { DlpGridRefs } from 'dlp-shared-datagrid';
+import { DlpFormRefs } from 'dlp-shared-form';
+import { BaseApiParams, ECommonApiType } from 'dlp-shared-models';
+import { AsyncState, StateRefs } from 'dlp-shared-states';
+*/
+
+/** 
+ * ### C. Control/Component 常用導入
+ */
+/*
+import { 
+  DlpColDef, 
+  EDlpGridCheckboxValueType, 
+  EDlpGridColumnType, 
+  IDlpGridLovEditorParams 
+} from 'dlp-shared-datagrid';
+import { DlpFieldConfigurationsType } from 'dlp-shared-form';
+*/
